@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --with=python2
+
+debian/xml2rfc.1:
+	PYTHONPATH=. help2man -n 'format RFCs using XML markup' -N ./scripts/xml2rfc -o $@
+override_dh_installman: debian/xml2rfc.1
+	dh_installman
+
+# silly workaround for emacs turds left in upstream tarball
+override_dh_clean:
+	dh_clean --exclude=nroff~
+
+override_dh_auto_test:
+	pyflakes xml2rfc
+	./test.py --verbose

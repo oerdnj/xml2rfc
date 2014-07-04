@@ -1,0 +1,5 @@
+SYSTEM "rfc2629.dtd" "dtd/rfc2629.dtd"
+DOCTYPE rfc "dtd/rfc2629.dtd"
+
+PUBLIC "-//IETF//ENTITIES XHTML subset for RFC 2629//EN" "dtd/rfc2629-xhtml.ent"
+PUBLIC "-//IETF//ENTITIES Other for RFC 2629//EN" "dtd/rfc2629-other.ent"
