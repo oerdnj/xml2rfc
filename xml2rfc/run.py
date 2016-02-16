@@ -18,12 +18,6 @@ import xml2rfc
 import lxml.etree
 import datetime
 
-major, minor = sys.version_info[:2]
-if not major == 2 and minor >= 6:
-    print ("")
-    print ("The xml2rfc script requires python 2, with a version of 2.6 or higher.")
-    print ("Can't proceed, quitting.")
-    exit()
 
 def display_version(self, opt, value, parser):
     print(xml2rfc.__version__)
@@ -38,59 +32,74 @@ def clear_cache(self, opt, value, parser):
 def main():
     # Populate options
     formatter = optparse.IndentedHelpFormatter(max_help_position=40)
-    optionparser = optparse.OptionParser(usage='xml2rfc SOURCE [options] '
-                                        'FORMATS...\nExample: xml2rfc '
-                                        'draft.xml -f Draft-1.0 --text --html',
+    optionparser = optparse.OptionParser(usage='xml2rfc SOURCE [OPTIONS] '
+                                        '...\nExample: xml2rfc '
+                                        'draft.xml -o Draft-1.0 --text --html',
                                         formatter=formatter)
-    optionparser.add_option('-v', '--verbose', action='store_true',
-                            dest='verbose', help='print extra information')
-    optionparser.add_option('-q', '--quiet', action='store_true',
-                            dest='quiet', help='dont print anything')
-    # optionparser.add_option('-w', '--warn-error', action='store_true',
-    #                         dest='warn_error', help='treat warnings as '
-    #                        'errors and halt execution')
-    optionparser.add_option('-n', '--no-dtd', dest='no_dtd', action='store_true',
-                            help='disable DTD validation step')
-    optionparser.add_option('-c', '--cache', dest='cache', 
-                            help='specify an alternate cache directory to write'
-                            ' to')
-    optionparser.add_option('-d', '--dtd', dest='dtd',
-                            help='specify an alternate dtd file')
-    optionparser.add_option('-b', '--basename', dest='basename', metavar='NAME',
-                            help='specify the base name for output files')
-    optionparser.add_option('-o', '--out', '-f', '--filename', dest='filename', metavar='FILE',
-                            help='specify an explicit output filename (only '
-                            'valid with a single format enabled)')
-    optionparser.add_option('', '--date', dest='datestring', metavar='DATE',
-                            default=datetime.datetime.today().strftime("%Y-%m-%d"),
-                            help='run as if todays date is DATE (format: yyyy-mm-dd)')
-    optionparser.add_option('', '--clear-cache', action='callback',
-                            help='purge the cache and exit',
-                            callback=clear_cache)
-    optionparser.add_option('', '--version', action='callback',
-                            help='display the version number and exit',
-                            callback=display_version)
 
-    formatgroup = optparse.OptionGroup(optionparser, 'Formats', 'At least one'
-                                       ' but as many as all of the following'
-                                       ' output formats must be specified.'
-                                       ' The destination filename will be based'
-                                       ' on the input filename, unless an'
-                                       ' argument was given to --basename.')
-    formatgroup.add_option('', '--raw', dest='raw', action='store_true',
-                           help='outputs to a text file, unpaginated')
+    formatgroup = optparse.OptionGroup(optionparser, 'Formats',
+                                       'Any or all of the following '
+                                       'output formats may be specified. '
+                                       'The default is --text. '
+                                       'The destination filename will be based '
+                                       'on the input filename, unless an '
+                                       'argument is given to --basename.')
     formatgroup.add_option('', '--text', dest='text', action='store_true',
                            help='outputs to a text file with proper page '
                            'breaks')
-    formatgroup.add_option('', '--nroff', dest='nroff', action='store_true',
-                           help='outputs to an nroff file')
     formatgroup.add_option('', '--html', dest='html', action='store_true',
                            help='outputs to an html file')
+    formatgroup.add_option('', '--nroff', dest='nroff', action='store_true',
+                           help='outputs to an nroff file')
+    formatgroup.add_option('', '--raw', dest='raw', action='store_true',
+                           help='outputs to a text file, unpaginated')
     formatgroup.add_option('', '--exp', dest='exp', action='store_true',
                            help='outputs to an XML file with all references'
                            ' expanded')
-
     optionparser.add_option_group(formatgroup)
+
+
+    plain_options = optparse.OptionGroup(optionparser, 'Plain Options')
+    plain_options.add_option('-C', '--clear-cache', action='callback',
+                            help='purge the cache and exit', callback=clear_cache)
+    plain_options.add_option('-n', '--no-dtd', dest='no_dtd', action='store_true',
+                            help='disable DTD validation step')
+    plain_options.add_option('-N', '--no-network', dest='no_network', action='store_true',
+                            help='don\'t use the network to resolve references', default=False)
+    plain_options.add_option('-q', '--quiet', action='store_true',
+                            dest='quiet', help='dont print anything')
+    plain_options.add_option('-v', '--verbose', action='store_true',
+                            dest='verbose', help='print extra information')
+    plain_options.add_option('-V', '--version', action='callback',
+                            help='display the version number and exit',
+                            callback=display_version)
+    optionparser.add_option_group(plain_options)
+
+
+    value_options = optparse.OptionGroup(optionparser, 'Other Options')
+    value_options.add_option('-b', '--basename', dest='basename', metavar='NAME',
+                            help='specify the base name for output files')
+    value_options.add_option('-c', '--cache', dest='cache', 
+                            help='specify an alternate cache directory to write to')
+    value_options.add_option('-d', '--dtd', dest='dtd', help='specify an alternate dtd file')
+    value_options.add_option('-D', '--date', dest='datestring', metavar='DATE',
+                            default=datetime.datetime.today().strftime("%Y-%m-%d"),
+                            help='run as if thedate is DATE (format: yyyy-mm-dd)')
+    value_options.add_option('-f', '--filename', dest='filename', metavar='FILE',
+                            help='Deprecated.  The same as -o.')
+    value_options.add_option('-o', '--out', dest='output_filename', metavar='FILE',
+                            help='specify an explicit output filename')
+    optionparser.add_option_group(value_options)
+
+
+    formatoptions = optparse.OptionGroup(optionparser, 'Format Options', 
+                                       ' Some formats accept additional format-specific options')
+    formatoptions.add_option('', '--no-headers', dest='omit_headers', action='store_true',
+                           help='with --text: calculate page breaks, and emit form feeds and page top'
+                           ' spacing, but omit headers and footers from the paginated format'
+                       )
+    optionparser.add_option_group(formatoptions)
+
 
     # Parse and validate arguments
     (options, args) = optionparser.parse_args()
@@ -101,7 +110,7 @@ def main():
     if not os.path.exists(source):
         sys.exit('No such file: ' + source)
     num_formats = len([ o for o in [options.raw, options.text, options.nroff, options.html, options.exp] if o])
-    if num_formats > 1 and options.filename:
+    if num_formats > 1 and (options.filename or options.output_filename):
         sys.exit('Cannot give an explicit filename with more than one format, '
                  'use --basename instead.')
     if num_formats < 1:
@@ -124,6 +133,8 @@ def main():
                 sys.exit(1)
     options.date = datetime.datetime.strptime(options.datestring, "%Y-%m-%d").date()
 
+    if options.omit_headers and not options.text:
+        sys.exit("You can only use --no-headers with paginated text output.")
 
     # Setup warnings module
     # xml2rfc.log.warn_error = options.warn_error and True or False
@@ -134,6 +145,7 @@ def main():
     parser = xml2rfc.XmlRfcParser(source, verbose=options.verbose,
                                   quiet=options.quiet,
                                   cache_path=options.cache,
+                                  no_network=options.no_network,
                                   templates_path=globals().get('_TEMPLATESPATH', None))
     try:
         xmlrfc = parser.parse()
@@ -152,6 +164,15 @@ def main():
         if not ok:
             xml2rfc.log.exception('Unable to validate the XML document: ' + args[0], errors)
             sys.exit(1)
+
+    if options.filename:
+        xml2rfc.log.warn("The -f and --filename options are deprecated and will"
+                        " go away in version 3.0 of xml2rfc.  Use -o instead")
+        if options.output_filename and options.filename != options.output_filename:
+            xml2rfc.log.warn("You should not specify conflicting -f and -o options.  Using -o %s"
+                        % options.output_filename)
+        if not options.output_filename:
+            options.output_filename = options.filename
 
     # Execute any writers specified
     try:
@@ -176,7 +197,7 @@ def main():
                                                   quiet=options.quiet,
                                                   verbose=options.verbose,
                                                   date=options.date)
-            filename = options.filename
+            filename = options.output_filename
             if not filename:
                 filename = basename + '.exp.xml'
             expwriter.write(filename)
@@ -186,7 +207,7 @@ def main():
                                                verbose=options.verbose,
                                                date=options.date,
                                                templates_dir=globals().get('_TEMPLATESPATH', None))
-            filename = options.filename
+            filename = options.output_filename
             if not filename:
                 filename = basename + '.html'
             htmlwriter.write(filename)
@@ -195,7 +216,7 @@ def main():
                                                  quiet=options.quiet,
                                                  verbose=options.verbose,
                                                  date=options.date)
-            filename = options.filename
+            filename = options.output_filename
             if not filename:
                 filename = basename + '.raw.txt'
             rawwriter.write(filename)
@@ -203,8 +224,10 @@ def main():
             pagedwriter = xml2rfc.PaginatedTextRfcWriter(xmlrfc,
                                                          quiet=options.quiet,
                                                          verbose=options.verbose,
-                                                         date=options.date)
-            filename = options.filename
+                                                         date=options.date,
+                                                         omit_headers=options.omit_headers,
+                                                     )
+            filename = options.output_filename
             if not filename:
                 filename = basename + '.txt'
             pagedwriter.write(filename)
@@ -213,7 +236,7 @@ def main():
                                                  quiet=options.quiet,
                                                  verbose=options.verbose,
                                                  date=options.date)
-            filename = options.filename
+            filename = options.output_filename
             if not filename:
                 filename = basename + '.nroff'
             nroffwriter.write(filename)
@@ -222,4 +245,12 @@ def main():
                           '\n  ' + e.msg)
 
 if __name__ == '__main__':
+
+    major, minor = sys.version_info[:2]
+    if not major == 2 and minor >= 6:
+        print ("")
+        print ("The xml2rfc script requires python 2, with a version of 2.6 or higher.")
+        print ("Can't proceed, quitting.")
+        exit()
+
     main()

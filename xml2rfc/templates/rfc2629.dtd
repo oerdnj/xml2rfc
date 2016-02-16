@@ -189,6 +189,7 @@
 <!ATTLIST section
           anchor      ID                 #IMPLIED
           title       %ATEXT;            #REQUIRED
+	  numbered    (yes|no)		 #IMPLIED
           toc         (include|exclude|default)
                                          "default">
 
@@ -298,6 +299,7 @@
           title       %ATEXT;            "References">
 <!ELEMENT reference   (front,seriesInfo*,format*,annotation*)>
 <!ATTLIST reference
+	  quote-title (true|false)	 "true"
           anchor      ID                 #IMPLIED
           target      %URI;              #IMPLIED>
 <!ELEMENT seriesInfo  EMPTY>

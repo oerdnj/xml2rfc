@@ -9,6 +9,10 @@ import re
 import os
 import shutil
 import xml2rfc.log
+import xml2rfc.utils
+import requests
+import codecs
+import time
 
 try:
     from urllib.parse import urlparse, urljoin
@@ -21,7 +25,6 @@ except ImportError:
     pass
 
 __all__ = ['XmlRfcParser', 'XmlRfc', 'XmlRfcError']
-
 
 class XmlRfcError(Exception):
     """ Application XML errors with positional information
@@ -41,7 +44,7 @@ class CachingResolver(lxml.etree.Resolver):
     """ Custom ENTITY request handler that uses a local cache """
     def __init__(self, cache_path=None, library_dirs=None, source=None,
                  templates_path='templates', verbose=False, quiet=False,
-                 network_locs= [
+                 no_network=False, network_locs= [
                      'http://xml2rfc.ietf.org/public/rfc/',
                      'http://xml2rfc.tools.ietf.org/public/rfc/',
                      'http://xml.resource.org/public/rfc/',
@@ -52,12 +55,17 @@ class CachingResolver(lxml.etree.Resolver):
         self.source = source
         self.library_dirs = library_dirs
         self.templates_path = templates_path
+        self.no_network=no_network
         self.network_locs = network_locs
         self.include = False
         self.rfc_number = rfc_number
+        self.cache_refresh_secs = (60*60*24*14) # 14 days
 
         # Get directory of source
-        self.source_dir = os.path.abspath(os.path.dirname(self.source))
+        if self.source:
+            self.source_dir = os.path.abspath(os.path.dirname(self.source))
+        else:
+            self.source_dir = None
 
         # Determine cache directories to read/write to
         self.read_caches = [ os.path.expanduser(path) for path in xml2rfc.CACHES ]
@@ -90,6 +98,8 @@ class CachingResolver(lxml.etree.Resolver):
             if not os.path.exists(pdir):
                 os.makedirs(pdir)
                 
+        self.sessions = {}
+
     def delete_cache(self, path=None):
         # Explicit path given?
         caches = path and [path] or self.read_caches
@@ -220,6 +230,8 @@ class CachingResolver(lxml.etree.Resolver):
                         result = self.cache(path)
                         if result:
                             break
+                if not result and self.no_network:
+                    xml2rfc.log.warn("Document not found in cache, and --no-network specified -- couldn't resolve %s" % request)
                 tried_cache = True
             else:
                 if os.path.dirname(paths[0]):
@@ -244,6 +256,9 @@ class CachingResolver(lxml.etree.Resolver):
                             if result:
                                 break
                         tried_cache = True
+                        if not result and self.no_network:
+                            xml2rfc.log.warn("Document not found in cache, and --no-network specified -- couldn't resolve %s" % request)
+
                         # if not result:
                         #     # Document didn't exist, default to source dir
                         #     result = os.path.join(self.source_dir, request)
@@ -274,13 +289,15 @@ class CachingResolver(lxml.etree.Resolver):
                             tried_cache = True
                             if result:
                                 break
+                        if not result and self.no_network:
+                            xml2rfc.log.warn("Document not found in cache, and --no-network specified -- couldn't resolve %s" % request)
                     # if not result:
                     #     # Default to source dir
                     #     result = os.path.join(self.source_dir, request)
                     #     attempts.append(result)
 
         # Verify the result -- either raise exception or return it
-        if not os.path.exists(result) and not urlparse(result).netloc:
+        if not result or (not os.path.exists(result) and not urlparse(original).netloc):
             if os.path.isabs(original):
                 xml2rfc.log.warn('A reference was requested with an absolute path, but not found '
                     'in that location.  Removing the path component will cause xml2rfc to look for'
@@ -305,45 +322,48 @@ class CachingResolver(lxml.etree.Resolver):
 
             Checks for the existence of the cache and creates it if necessary.
         """
-        basename = os.path.basename(urlparse(url).path)
+        scheme, netloc, path, params, query, fragment = urlparse(url)
+        basename = os.path.basename(path)
         typename = self.include and 'include' or 'entity'
         # Try to load the URL from each cache in `read_cache`
         for dir in self.read_caches:
             cached_path = os.path.join(dir, xml2rfc.CACHE_PREFIX, basename)
             if os.path.exists(cached_path):
-                xml2rfc.log.note('Resolving ' + typename + '...', url)
-                xml2rfc.log.note('Loaded from cache', cached_path)
-                return cached_path
-        # Not found, save to `write_cache`
-        if self.write_cache:
-            write_path = os.path.join(self.write_cache, 
-                                      xml2rfc.CACHE_PREFIX, basename)
-            try:
-                xml2rfc.log.note('Resolving ' + typename + '...', url)
-                xml2rfc.utils.StrictUrlOpener().retrieve(url, write_path)
-                xml2rfc.log.note('Created cache at', write_path)
+                if os.path.getmtime(cached_path) < (time.time() - self.cache_refresh_secs) and not self.no_network:
+                    xml2rfc.log.note('Cached version at %s too old; will refresh cache for %s %s' % (cached_path, typename, url))
+                    break
+                else:
+                    xml2rfc.log.note('Resolving ' + typename + '...', url)
+                    xml2rfc.log.note('Loaded from cache', cached_path)
+                    return cached_path
+
+        xml2rfc.log.note('Resolving ' + typename + '...', url)
+        if not netloc in self.sessions:
+            self.sessions[netloc] = requests.Session()
+        session = self.sessions[netloc]
+        r = session.get(url)
+        if r.status_code == 200:
+            if self.write_cache:
+                write_path = os.path.join(self.write_cache, 
+                                          xml2rfc.CACHE_PREFIX, basename)
+                with codecs.open(write_path, 'w', encoding='utf-8') as cache_file:
+                    cache_file.write(r.text)
+                xml2rfc.log.note('Added file to cache: ', write_path)
                 return write_path
-            except IOError as e:
-                # Invalid URL -- Error will be displayed in getReferenceRequest
-                xml2rfc.log.note("I/O Error: %s" % e)
-                return ''
-        # No write cache available, test existance of URL and return
-        else:
-            try:
-                xml2rfc.log.write('Resolving ' + typename + '...', url)
-                xml2rfc.utils.StrictUrlOpener().open(url)
+            else:
                 return url
-            except IOError as e:
-                # Invalid URL
-                xml2rfc.log.note("I/O Error: %s" % e)
-                return ''
+        else:
+            # Invalid URL -- Error will be displayed in getReferenceRequest
+            xml2rfc.log.note("URL retrieval failed with status code %s for '%s'" % (r.status_code, r.url))
+            return ''
+
 
 class XmlRfcParser:
 
     """ XML parser container with callbacks to construct an RFC tree """
     def __init__(self, source, verbose=False, quiet=False,
                  cache_path=None, templates_path=None, library_dirs=None,
-                 network_locs=[
+                 no_network=False, network_locs=[
                      'http://xml2rfc.ietf.org/public/rfc/',
                      'http://xml2rfc.tools.ietf.org/public/rfc/',
                      'http://xml.resource.org/public/rfc/',
@@ -353,6 +373,7 @@ class XmlRfcParser:
         self.quiet = quiet
         self.source = source
         self.cache_path = cache_path
+        self.no_network = no_network
         self.network_locs = network_locs
 
         # Initialize templates directory
@@ -401,7 +422,7 @@ class XmlRfcParser:
                                       dtd_validation=False,
                                       load_dtd=True,
                                       attribute_defaults=True,
-                                      no_network=False,
+                                      no_network=self.no_network,
                                       remove_comments=remove_comments,
                                       remove_pis=remove_pis,
                                       remove_blank_text=True,
@@ -415,6 +436,7 @@ class XmlRfcParser:
                                         library_dirs=self.library_dirs,
                                         templates_path=self.templates_path,
                                         source=self.source,
+                                        no_network=self.no_network,
                                         network_locs=self.network_locs,
                                         verbose=self.verbose,
                                         quiet=self.quiet,
@@ -423,19 +445,19 @@ class XmlRfcParser:
 
         # Get hold of the rfc number (if any) in the rfc element, so we can
         # later resolve the "&rfc.number;" entity.
+        self.rfc_number = None
         try:
             for action, element in context:
                 if element.tag == "rfc":
                     self.rfc_number = element.attrib.get("number", None)
         except lxml.etree.XMLSyntaxError as e:
             xml2rfc.log.warn("Parsing Error: %s" % e)
-            self.rfc_number = None
 
         # now get a regular parser, and parse again, this time resolving entities
         parser = lxml.etree.XMLParser(dtd_validation=False,
                                       load_dtd=True,
                                       attribute_defaults=True,
-                                      no_network=False,
+                                      no_network=self.no_network,
                                       remove_comments=remove_comments,
                                       remove_pis=remove_pis,
                                       remove_blank_text=True,
@@ -447,6 +469,7 @@ class XmlRfcParser:
                                         library_dirs=self.library_dirs,
                                         templates_path=self.templates_path,
                                         source=self.source,
+                                        no_network=self.no_network,
                                         network_locs=self.network_locs,
                                         verbose=self.verbose,
                                         quiet=self.quiet,
@@ -564,7 +587,7 @@ class XmlRfc:
 
     def getpis(self):
         """ Returns a list of the XML processing instructions """
-        return self.pis
+        return self.pis.copy()
     
     def validate(self, dtd_path=None):
         """ Validate the document with its default dtd, or an optional one 
@@ -604,24 +627,9 @@ class XmlRfc:
             else:
                 # The document was not valid
                 return False, dtd.error_log
-    
+
     def parse_pi(self, pi):
-        """ Add a processing instruction to the current state 
-            
-            Will also return the dictionary containing the added instructions
-            for use in things like ?include instructions
-        """
-        if pi.text:
-            # Split text in the format 'key="val"'
-            chunks = re.split(r'=[\'"]([^\'"]*)[\'"]', pi.text)
-            # Create pairs from this flat list, discard last element if odd
-            tmp_dict = dict(zip(chunks[::2], chunks[1::2]))
-            for key, val in tmp_dict.items():
-                # Update main PI state
-                self.pis[key] = val
-            # Return the new values added
-            return tmp_dict
-        return {}
+        return xml2rfc.utils.parse_pi(pi, self.pis)
 
     def _eval_pre_pi(self):
         """ Evaluate pre-document processing instructions
