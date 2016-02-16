@@ -3,7 +3,7 @@
 	dh $@ --with=python2
 
 debian/xml2rfc.1:
-	PYTHONPATH=. help2man -n 'format RFCs using XML markup' -N ./scripts/xml2rfc -o $@
+	PYTHONPATH=. help2man -n 'format RFCs using XML markup' -N ./xml2rfc/run.py -o $@
 override_dh_installman: debian/xml2rfc.1
 	dh_installman
 
