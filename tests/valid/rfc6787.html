@@ -441,7 +441,7 @@
 <link href="#rfc.section.8.4.15" rel="Chapter" title="8.4.15 Speak-Length"/>
 <link href="#rfc.section.8.4.16" rel="Chapter" title="8.4.16 Load-Lexicon"/>
 <link href="#rfc.section.8.4.17" rel="Chapter" title="8.4.17 Lexicon-Search-Order"/>
-<link href="#rfc.section.8.5" rel="Chapter" title="8.5 Synthesizer Message Body "/>
+<link href="#rfc.section.8.5" rel="Chapter" title="8.5 Synthesizer Message Body"/>
 <link href="#rfc.section.8.5.1" rel="Chapter" title="8.5.1 Synthesizer Speech Data"/>
 <link href="#rfc.section.8.5.2" rel="Chapter" title="8.5.2 Lexicon Data"/>
 <link href="#rfc.section.8.6" rel="Chapter" title="8.6 SPEAK Method"/>
@@ -650,9 +650,10 @@
 <link href="#rfc.references.2" rel="Chapter" title="17.2 Informative References"/>
 <link href="#rfc.appendix.A" rel="Chapter" title="A Contributors"/>
 <link href="#rfc.appendix.B" rel="Chapter" title="B Acknowledgements"/>
+<link href="#rfc.authors" rel="Chapter"/>
 
 
-  <meta name="generator" content="xml2rfc version N.N.N - http://tools.ietf.org/tools/xml2rfc" />
+  <meta name="generator" content="xml2rfc version 2.4.13.dev0 - http://tools.ietf.org/tools/xml2rfc" />
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Burnett, D. and S. Shanmugham" />
@@ -720,31 +721,31 @@
 
   	<li>1.   <a href="#rfc.section.1">Introduction</a></li>
 <li>2.   <a href="#rfc.section.2">Document Conventions</a></li>
-<li>2.1.   <a href="#rfc.section.2.1">Definitions</a></li>
+<ul><li>2.1.   <a href="#rfc.section.2.1">Definitions</a></li>
 <li>2.2.   <a href="#rfc.section.2.2">State-Machine Diagrams</a></li>
 <li>2.3.   <a href="#rfc.section.2.3">URI Schemes</a></li>
-<li>3.   <a href="#rfc.section.3">Architecture</a></li>
-<li>3.1.   <a href="#rfc.section.3.1">MRCPv2 Media Resource Types</a></li>
+</ul><li>3.   <a href="#rfc.section.3">Architecture</a></li>
+<ul><li>3.1.   <a href="#rfc.section.3.1">MRCPv2 Media Resource Types</a></li>
 <li>3.2.   <a href="#rfc.section.3.2">Server and Resource Addressing</a></li>
-<li>4.   <a href="#rfc.section.4">MRCPv2 Basics</a></li>
-<li>4.1.   <a href="#rfc.section.4.1">Connecting to the Server</a></li>
+</ul><li>4.   <a href="#rfc.section.4">MRCPv2 Basics</a></li>
+<ul><li>4.1.   <a href="#rfc.section.4.1">Connecting to the Server</a></li>
 <li>4.2.   <a href="#rfc.section.4.2">Managing Resource Control Channels</a></li>
 <li>4.3.   <a href="#rfc.section.4.3">SIP Session Example</a></li>
 <li>4.4.   <a href="#rfc.section.4.4">Media Streams and RTP Ports</a></li>
 <li>4.5.   <a href="#rfc.section.4.5">MRCPv2 Message Transport</a></li>
 <li>4.6.   <a href="#rfc.section.4.6">MRCPv2 Session Termination</a></li>
-<li>5.   <a href="#rfc.section.5">MRCPv2 Specification</a></li>
-<li>5.1.   <a href="#rfc.section.5.1">Common Protocol Elements</a></li>
+</ul><li>5.   <a href="#rfc.section.5">MRCPv2 Specification</a></li>
+<ul><li>5.1.   <a href="#rfc.section.5.1">Common Protocol Elements</a></li>
 <li>5.2.   <a href="#rfc.section.5.2">Request</a></li>
 <li>5.3.   <a href="#rfc.section.5.3">Response</a></li>
 <li>5.4.   <a href="#rfc.section.5.4">Status Codes</a></li>
 <li>5.5.   <a href="#rfc.section.5.5">Events</a></li>
-<li>6.   <a href="#rfc.section.6">MRCPv2 Generic Methods, Headers, and Result Structure</a></li>
-<li>6.1.   <a href="#rfc.section.6.1">Generic Methods</a></li>
-<li>6.1.1.   <a href="#rfc.section.6.1.1">SET-PARAMS</a></li>
+</ul><li>6.   <a href="#rfc.section.6">MRCPv2 Generic Methods, Headers, and Result Structure</a></li>
+<ul><li>6.1.   <a href="#rfc.section.6.1">Generic Methods</a></li>
+<ul><li>6.1.1.   <a href="#rfc.section.6.1.1">SET-PARAMS</a></li>
 <li>6.1.2.   <a href="#rfc.section.6.1.2">GET-PARAMS</a></li>
-<li>6.2.   <a href="#rfc.section.6.2">Generic Message Headers</a></li>
-<li>6.2.1.   <a href="#rfc.section.6.2.1">Channel-Identifier</a></li>
+</ul><li>6.2.   <a href="#rfc.section.6.2">Generic Message Headers</a></li>
+<ul><li>6.2.1.   <a href="#rfc.section.6.2.1">Channel-Identifier</a></li>
 <li>6.2.2.   <a href="#rfc.section.6.2.2">Accept</a></li>
 <li>6.2.3.   <a href="#rfc.section.6.2.3">Active-Request-Id-List</a></li>
 <li>6.2.4.   <a href="#rfc.section.6.2.4">Proxy-Sync-Id</a></li>
@@ -760,15 +761,15 @@
 <li>6.2.14.   <a href="#rfc.section.6.2.14">Logging-Tag</a></li>
 <li>6.2.15.   <a href="#rfc.section.6.2.15">Set-Cookie</a></li>
 <li>6.2.16.   <a href="#rfc.section.6.2.16">Vendor-Specific Parameters</a></li>
-<li>6.3.   <a href="#rfc.section.6.3">Generic Result Structure</a></li>
-<li>6.3.1.   <a href="#rfc.section.6.3.1">Natural Language Semantics Markup Language</a></li>
-<li>7.   <a href="#rfc.section.7">Resource Discovery</a></li>
+</ul><li>6.3.   <a href="#rfc.section.6.3">Generic Result Structure</a></li>
+<ul><li>6.3.1.   <a href="#rfc.section.6.3.1">Natural Language Semantics Markup Language</a></li>
+</ul></ul><li>7.   <a href="#rfc.section.7">Resource Discovery</a></li>
 <li>8.   <a href="#rfc.section.8">Speech Synthesizer Resource</a></li>
-<li>8.1.   <a href="#rfc.section.8.1">Synthesizer State Machine</a></li>
+<ul><li>8.1.   <a href="#rfc.section.8.1">Synthesizer State Machine</a></li>
 <li>8.2.   <a href="#rfc.section.8.2">Synthesizer Methods</a></li>
 <li>8.3.   <a href="#rfc.section.8.3">Synthesizer Events</a></li>
 <li>8.4.   <a href="#rfc.section.8.4">Synthesizer Header Fields</a></li>
-<li>8.4.1.   <a href="#rfc.section.8.4.1">Jump-Size</a></li>
+<ul><li>8.4.1.   <a href="#rfc.section.8.4.1">Jump-Size</a></li>
 <li>8.4.2.   <a href="#rfc.section.8.4.2">Kill-On-Barge-In</a></li>
 <li>8.4.3.   <a href="#rfc.section.8.4.3">Speaker-Profile</a></li>
 <li>8.4.4.   <a href="#rfc.section.8.4.4">Completion-Cause</a></li>
@@ -785,10 +786,10 @@
 <li>8.4.15.   <a href="#rfc.section.8.4.15">Speak-Length</a></li>
 <li>8.4.16.   <a href="#rfc.section.8.4.16">Load-Lexicon</a></li>
 <li>8.4.17.   <a href="#rfc.section.8.4.17">Lexicon-Search-Order</a></li>
-<li>8.5.   <a href="#rfc.section.8.5">Synthesizer Message Body </a></li>
-<li>8.5.1.   <a href="#rfc.section.8.5.1">Synthesizer Speech Data</a></li>
+</ul><li>8.5.   <a href="#rfc.section.8.5">Synthesizer Message Body</a></li>
+<ul><li>8.5.1.   <a href="#rfc.section.8.5.1">Synthesizer Speech Data</a></li>
 <li>8.5.2.   <a href="#rfc.section.8.5.2">Lexicon Data</a></li>
-<li>8.6.   <a href="#rfc.section.8.6">SPEAK Method</a></li>
+</ul><li>8.6.   <a href="#rfc.section.8.6">SPEAK Method</a></li>
 <li>8.7.   <a href="#rfc.section.8.7">STOP</a></li>
 <li>8.8.   <a href="#rfc.section.8.8">BARGE-IN-OCCURRED</a></li>
 <li>8.9.   <a href="#rfc.section.8.9">PAUSE</a></li>
@@ -797,12 +798,12 @@
 <li>8.12.   <a href="#rfc.section.8.12">SPEAK-COMPLETE</a></li>
 <li>8.13.   <a href="#rfc.section.8.13">SPEECH-MARKER</a></li>
 <li>8.14.   <a href="#rfc.section.8.14">DEFINE-LEXICON</a></li>
-<li>9.   <a href="#rfc.section.9">Speech Recognizer Resource</a></li>
-<li>9.1.   <a href="#rfc.section.9.1">Recognizer State Machine</a></li>
+</ul><li>9.   <a href="#rfc.section.9">Speech Recognizer Resource</a></li>
+<ul><li>9.1.   <a href="#rfc.section.9.1">Recognizer State Machine</a></li>
 <li>9.2.   <a href="#rfc.section.9.2">Recognizer Methods</a></li>
 <li>9.3.   <a href="#rfc.section.9.3">Recognizer Events</a></li>
 <li>9.4.   <a href="#rfc.section.9.4">Recognizer Header Fields</a></li>
-<li>9.4.1.   <a href="#rfc.section.9.4.1">Confidence-Threshold</a></li>
+<ul><li>9.4.1.   <a href="#rfc.section.9.4.1">Confidence-Threshold</a></li>
 <li>9.4.2.   <a href="#rfc.section.9.4.2">Sensitivity-Level</a></li>
 <li>9.4.3.   <a href="#rfc.section.9.4.3">Speed-Vs-Accuracy</a></li>
 <li>9.4.4.   <a href="#rfc.section.9.4.4">N-Best-List-Length</a></li>
@@ -847,24 +848,24 @@
 <li>9.4.43.   <a href="#rfc.section.9.4.43">New-Phrase-Id</a></li>
 <li>9.4.44.   <a href="#rfc.section.9.4.44">Confusable-Phrases-URI</a></li>
 <li>9.4.45.   <a href="#rfc.section.9.4.45">Abort-Phrase-Enrollment</a></li>
-<li>9.5.   <a href="#rfc.section.9.5">Recognizer Message Body</a></li>
-<li>9.5.1.   <a href="#rfc.section.9.5.1">Recognizer Grammar Data</a></li>
+</ul><li>9.5.   <a href="#rfc.section.9.5">Recognizer Message Body</a></li>
+<ul><li>9.5.1.   <a href="#rfc.section.9.5.1">Recognizer Grammar Data</a></li>
 <li>9.5.2.   <a href="#rfc.section.9.5.2">Recognizer Result Data</a></li>
 <li>9.5.3.   <a href="#rfc.section.9.5.3">Enrollment Result Data</a></li>
 <li>9.5.4.   <a href="#rfc.section.9.5.4">Recognizer Context Block</a></li>
-<li>9.6.   <a href="#rfc.section.9.6">Recognizer Results</a></li>
-<li>9.6.1.   <a href="#rfc.section.9.6.1">Markup Functions</a></li>
+</ul><li>9.6.   <a href="#rfc.section.9.6">Recognizer Results</a></li>
+<ul><li>9.6.1.   <a href="#rfc.section.9.6.1">Markup Functions</a></li>
 <li>9.6.2.   <a href="#rfc.section.9.6.2">Overview of Recognizer Result Elements and Their Relationships</a></li>
 <li>9.6.3.   <a href="#rfc.section.9.6.3">Elements and Attributes</a></li>
-<li>9.7.   <a href="#rfc.section.9.7">Enrollment Results</a></li>
-<li>9.7.1.   <a href="#rfc.section.9.7.1">&lt;num-clashes&gt; Element</a></li>
+</ul><li>9.7.   <a href="#rfc.section.9.7">Enrollment Results</a></li>
+<ul><li>9.7.1.   <a href="#rfc.section.9.7.1">&lt;num-clashes&gt; Element</a></li>
 <li>9.7.2.   <a href="#rfc.section.9.7.2">&lt;num-good-repetitions&gt; Element</a></li>
 <li>9.7.3.   <a href="#rfc.section.9.7.3">&lt;num-repetitions-still-needed&gt; Element</a></li>
 <li>9.7.4.   <a href="#rfc.section.9.7.4">&lt;consistency-status&gt; Element</a></li>
 <li>9.7.5.   <a href="#rfc.section.9.7.5">&lt;clash-phrase-ids&gt; Element</a></li>
 <li>9.7.6.   <a href="#rfc.section.9.7.6">&lt;transcriptions&gt; Element</a></li>
 <li>9.7.7.   <a href="#rfc.section.9.7.7">&lt;confusable-phrases&gt; Element</a></li>
-<li>9.8.   <a href="#rfc.section.9.8">DEFINE-GRAMMAR</a></li>
+</ul><li>9.8.   <a href="#rfc.section.9.8">DEFINE-GRAMMAR</a></li>
 <li>9.9.   <a href="#rfc.section.9.9">RECOGNIZE</a></li>
 <li>9.10.   <a href="#rfc.section.9.10">STOP</a></li>
 <li>9.11.   <a href="#rfc.section.9.11">GET-RESULT</a></li>
@@ -879,12 +880,12 @@
 <li>9.20.   <a href="#rfc.section.9.20">INTERPRET</a></li>
 <li>9.21.   <a href="#rfc.section.9.21">INTERPRETATION-COMPLETE</a></li>
 <li>9.22.   <a href="#rfc.section.9.22">DTMF Detection</a></li>
-<li>10.   <a href="#rfc.section.10">Recorder Resource</a></li>
-<li>10.1.   <a href="#rfc.section.10.1">Recorder State Machine</a></li>
+</ul><li>10.   <a href="#rfc.section.10">Recorder Resource</a></li>
+<ul><li>10.1.   <a href="#rfc.section.10.1">Recorder State Machine</a></li>
 <li>10.2.   <a href="#rfc.section.10.2">Recorder Methods</a></li>
 <li>10.3.   <a href="#rfc.section.10.3">Recorder Events</a></li>
 <li>10.4.   <a href="#rfc.section.10.4">Recorder Header Fields</a></li>
-<li>10.4.1.   <a href="#rfc.section.10.4.1">Sensitivity-Level</a></li>
+<ul><li>10.4.1.   <a href="#rfc.section.10.4.1">Sensitivity-Level</a></li>
 <li>10.4.2.   <a href="#rfc.section.10.4.2">No-Input-Timeout</a></li>
 <li>10.4.3.   <a href="#rfc.section.10.4.3">Completion-Cause</a></li>
 <li>10.4.4.   <a href="#rfc.section.10.4.4">Completion-Reason</a></li>
@@ -899,18 +900,18 @@
 <li>10.4.13.   <a href="#rfc.section.10.4.13">Ver-Buffer-Utterance</a></li>
 <li>10.4.14.   <a href="#rfc.section.10.4.14">Start-Input-Timers</a></li>
 <li>10.4.15.   <a href="#rfc.section.10.4.15">New-Audio-Channel</a></li>
-<li>10.5.   <a href="#rfc.section.10.5">Recorder Message Body</a></li>
+</ul><li>10.5.   <a href="#rfc.section.10.5">Recorder Message Body</a></li>
 <li>10.6.   <a href="#rfc.section.10.6">RECORD</a></li>
 <li>10.7.   <a href="#rfc.section.10.7">STOP</a></li>
 <li>10.8.   <a href="#rfc.section.10.8">RECORD-COMPLETE</a></li>
 <li>10.9.   <a href="#rfc.section.10.9">START-INPUT-TIMERS</a></li>
 <li>10.10.   <a href="#rfc.section.10.10">START-OF-INPUT</a></li>
-<li>11.   <a href="#rfc.section.11">Speaker Verification and Identification</a></li>
-<li>11.1.   <a href="#rfc.section.11.1">Speaker Verification State Machine</a></li>
+</ul><li>11.   <a href="#rfc.section.11">Speaker Verification and Identification</a></li>
+<ul><li>11.1.   <a href="#rfc.section.11.1">Speaker Verification State Machine</a></li>
 <li>11.2.   <a href="#rfc.section.11.2">Speaker Verification Methods</a></li>
 <li>11.3.   <a href="#rfc.section.11.3">Verification Events</a></li>
 <li>11.4.   <a href="#rfc.section.11.4">Verification Header Fields</a></li>
-<li>11.4.1.   <a href="#rfc.section.11.4.1">Repository-URI</a></li>
+<ul><li>11.4.1.   <a href="#rfc.section.11.4.1">Repository-URI</a></li>
 <li>11.4.2.   <a href="#rfc.section.11.4.2">Voiceprint-Identifier</a></li>
 <li>11.4.3.   <a href="#rfc.section.11.4.3">Verification-Mode</a></li>
 <li>11.4.4.   <a href="#rfc.section.11.4.4">Adapt-Model</a></li>
@@ -931,10 +932,10 @@
 <li>11.4.19.   <a href="#rfc.section.11.4.19">New-Audio-Channel</a></li>
 <li>11.4.20.   <a href="#rfc.section.11.4.20">Abort-Verification</a></li>
 <li>11.4.21.   <a href="#rfc.section.11.4.21">Start-Input-Timers</a></li>
-<li>11.5.   <a href="#rfc.section.11.5">Verification Message Body</a></li>
-<li>11.5.1.   <a href="#rfc.section.11.5.1">Verification Result Data</a></li>
+</ul><li>11.5.   <a href="#rfc.section.11.5">Verification Message Body</a></li>
+<ul><li>11.5.1.   <a href="#rfc.section.11.5.1">Verification Result Data</a></li>
 <li>11.5.2.   <a href="#rfc.section.11.5.2">Verification Result Elements</a></li>
-<li>11.6.   <a href="#rfc.section.11.6">START-SESSION</a></li>
+</ul><li>11.6.   <a href="#rfc.section.11.6">START-SESSION</a></li>
 <li>11.7.   <a href="#rfc.section.11.7">END-SESSION</a></li>
 <li>11.8.   <a href="#rfc.section.11.8">QUERY-VOICEPRINT</a></li>
 <li>11.9.   <a href="#rfc.section.11.9">DELETE-VOICEPRINT</a></li>
@@ -947,8 +948,8 @@
 <li>11.16.   <a href="#rfc.section.11.16">START-OF-INPUT</a></li>
 <li>11.17.   <a href="#rfc.section.11.17">CLEAR-BUFFER</a></li>
 <li>11.18.   <a href="#rfc.section.11.18">GET-INTERMEDIATE-RESULT</a></li>
-<li>12.   <a href="#rfc.section.12">Security Considerations</a></li>
-<li>12.1.   <a href="#rfc.section.12.1">Rendezvous and Session Establishment</a></li>
+</ul><li>12.   <a href="#rfc.section.12">Security Considerations</a></li>
+<ul><li>12.1.   <a href="#rfc.section.12.1">Rendezvous and Session Establishment</a></li>
 <li>12.2.   <a href="#rfc.section.12.2">Control Channel Protection</a></li>
 <li>12.3.   <a href="#rfc.section.12.3">Media Session Protection</a></li>
 <li>12.4.   <a href="#rfc.section.12.4">Indirect Content Access</a></li>
@@ -956,44 +957,45 @@
 <li>12.6.   <a href="#rfc.section.12.6">DTMF and Recognition Buffers</a></li>
 <li>12.7.   <a href="#rfc.section.12.7">Client-Set Server Parameters</a></li>
 <li>12.8.   <a href="#rfc.section.12.8">DELETE-VOICEPRINT and Authorization</a></li>
-<li>13.   <a href="#rfc.section.13">IANA Considerations</a></li>
-<li>13.1.   <a href="#rfc.section.13.1">New Registries</a></li>
-<li>13.1.1.   <a href="#rfc.section.13.1.1">MRCPv2 Resource Types</a></li>
+</ul><li>13.   <a href="#rfc.section.13">IANA Considerations</a></li>
+<ul><li>13.1.   <a href="#rfc.section.13.1">New Registries</a></li>
+<ul><li>13.1.1.   <a href="#rfc.section.13.1.1">MRCPv2 Resource Types</a></li>
 <li>13.1.2.   <a href="#rfc.section.13.1.2">MRCPv2 Methods and Events</a></li>
 <li>13.1.3.   <a href="#rfc.section.13.1.3">MRCPv2 Header Fields</a></li>
 <li>13.1.4.   <a href="#rfc.section.13.1.4">MRCPv2 Status Codes</a></li>
 <li>13.1.5.   <a href="#rfc.section.13.1.5">Grammar Reference List Parameters</a></li>
 <li>13.1.6.   <a href="#rfc.section.13.1.6">MRCPv2 Vendor-Specific Parameters</a></li>
-<li>13.2.   <a href="#rfc.section.13.2">NLSML-Related Registrations</a></li>
-<li>13.2.1.   <a href="#rfc.section.13.2.1">'application/nlsml+xml' Media Type Registration</a></li>
-<li>13.3.   <a href="#rfc.section.13.3">NLSML XML Schema Registration</a></li>
+</ul><li>13.2.   <a href="#rfc.section.13.2">NLSML-Related Registrations</a></li>
+<ul><li>13.2.1.   <a href="#rfc.section.13.2.1">'application/nlsml+xml' Media Type Registration</a></li>
+</ul><li>13.3.   <a href="#rfc.section.13.3">NLSML XML Schema Registration</a></li>
 <li>13.4.   <a href="#rfc.section.13.4">MRCPv2 XML Namespace Registration</a></li>
 <li>13.5.   <a href="#rfc.section.13.5">Text Media Type Registrations</a></li>
-<li>13.5.1.   <a href="#rfc.section.13.5.1">text/grammar-ref-list</a></li>
-<li>13.6.   <a href="#rfc.section.13.6">'session' URI Scheme Registration</a></li>
+<ul><li>13.5.1.   <a href="#rfc.section.13.5.1">text/grammar-ref-list</a></li>
+</ul><li>13.6.   <a href="#rfc.section.13.6">'session' URI Scheme Registration</a></li>
 <li>13.7.   <a href="#rfc.section.13.7">SDP Parameter Registrations</a></li>
-<li>13.7.1.   <a href="#rfc.section.13.7.1">Sub-Registry "proto"</a></li>
+<ul><li>13.7.1.   <a href="#rfc.section.13.7.1">Sub-Registry "proto"</a></li>
 <li>13.7.2.   <a href="#rfc.section.13.7.2">Sub-Registry "att-field (media-level)"</a></li>
-<li>14.   <a href="#rfc.section.14">Examples</a></li>
-<li>14.1.   <a href="#rfc.section.14.1">Message Flow</a></li>
+</ul></ul><li>14.   <a href="#rfc.section.14">Examples</a></li>
+<ul><li>14.1.   <a href="#rfc.section.14.1">Message Flow</a></li>
 <li>14.2.   <a href="#rfc.section.14.2">Recognition Result Examples</a></li>
-<li>14.2.1.   <a href="#rfc.section.14.2.1">Simple ASR Ambiguity</a></li>
+<ul><li>14.2.1.   <a href="#rfc.section.14.2.1">Simple ASR Ambiguity</a></li>
 <li>14.2.2.   <a href="#rfc.section.14.2.2">Mixed Initiative</a></li>
 <li>14.2.3.   <a href="#rfc.section.14.2.3">DTMF Input</a></li>
 <li>14.2.4.   <a href="#rfc.section.14.2.4">Interpreting Meta-Dialog and Meta-Task Utterances</a></li>
 <li>14.2.5.   <a href="#rfc.section.14.2.5">Anaphora and Deixis</a></li>
 <li>14.2.6.   <a href="#rfc.section.14.2.6">Distinguishing Individual Items from Sets with One Member</a></li>
 <li>14.2.7.   <a href="#rfc.section.14.2.7">Extensibility</a></li>
-<li>15.   <a href="#rfc.section.15">ABNF Normative Definition</a></li>
+</ul></ul><li>15.   <a href="#rfc.section.15">ABNF Normative Definition</a></li>
 <li>16.   <a href="#rfc.section.16">XML Schemas</a></li>
-<li>16.1.   <a href="#rfc.section.16.1">NLSML Schema Definition</a></li>
+<ul><li>16.1.   <a href="#rfc.section.16.1">NLSML Schema Definition</a></li>
 <li>16.2.   <a href="#rfc.section.16.2">Enrollment Results Schema Definition</a></li>
 <li>16.3.   <a href="#rfc.section.16.3">Verification Results Schema Definition</a></li>
-<li>17.   <a href="#rfc.references">References</a></li>
-<li>17.1.   <a href="#rfc.references.1">Normative References</a></li>
+</ul><li>17.   <a href="#rfc.references">References</a></li>
+<ul><li>17.1.   <a href="#rfc.references.1">Normative References</a></li>
 <li>17.2.   <a href="#rfc.references.2">Informative References</a></li>
-<li>Appendix A.   <a href="#rfc.appendix.A">Contributors</a></li>
+</ul><li>Appendix A.   <a href="#rfc.appendix.A">Contributors</a></li>
 <li>Appendix B.   <a href="#rfc.appendix.B">Acknowledgements</a></li>
+<li><a href="#rfc.authors">Authors' Addresses</a></li>
 
 
   </ul>
@@ -1410,7 +1412,7 @@ message-body    =   *OCTET
 start-line      =   request-line / response-line / event-line
 
 message-header  =   1*(generic-header / resource-header /
-		       generic-field)
+                       generic-field)
 
 resource-header =   synthesizer-header
                 /   recognizer-header
@@ -2209,7 +2211,7 @@ speech-language     =   "Speech-Language" ":" 1*VCHAR CRLF
 <p id="rfc.section.8.4.10.p.1">When the synthesizer needs to fetch documents or other resources like speech markup or audio files, this header field controls the corresponding URI access properties. This provides client policy on when the synthesizer should retrieve content from the server. A value of "prefetch" indicates the content MAY be downloaded when the request is received, whereas "safe" indicates that content MUST NOT be downloaded until actually referenced. The default value is "prefetch". This header field MAY occur in SPEAK, SET-PARAMS, or GET-PARAMS requests.</p>
 <pre>
 fetch-hint          =   "Fetch-Hint" ":"
-			 ("prefetch" / "safe") CRLF
+                         ("prefetch" / "safe") CRLF
             </pre>
 <h3 id="rfc.section.8.4.11"><a href="#rfc.section.8.4.11">8.4.11.</a> Audio-Fetch-Hint</h3>
 <p id="rfc.section.8.4.11.p.1">When the synthesizer needs to fetch documents or other resources like speech audio files, this header field controls the corresponding URI access properties. This provides client policy whether or not the synthesizer is permitted to attempt to optimize speech by pre-fetching audio. The value is either "safe" to say that audio is only fetched when it is referenced, never before; "prefetch" to permit, but not require the implementation to pre-fetch the audio; or "stream" to allow it to stream the audio fetches. The default value is "prefetch". This header field MAY occur in SPEAK, SET-PARAMS, or GET-PARAMS requests.</p>
@@ -2259,7 +2261,7 @@ load-lexicon       =   "Load-Lexicon" ":" BOOLEAN CRLF
 lexicon-search-order =   "Lexicon-Search-Order" ":"
           "&lt;" absoluteURI "&gt;" *(" " "&lt;" absoluteURI "&gt;") CRLF
             </pre>
-<h2 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#sec.synthMessageBody" id="sec.synthMessageBody">Synthesizer Message Body </a></h2>
+<h2 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#sec.synthMessageBody" id="sec.synthMessageBody">Synthesizer Message Body</a></h2>
 <p id="rfc.section.8.5.p.1">A synthesizer message can contain additional information associated with the Request, Response, or Event in its message body.</p>
 <h3 id="rfc.section.8.5.1"><a href="#rfc.section.8.5.1">8.5.1.</a> Synthesizer Speech Data</h3>
 <p id="rfc.section.8.5.1.p.1">Marked-up text for the synthesizer to speak is specified as a typed media entity in the message body. The speech data to be spoken by the synthesizer can be specified inline by embedding the data in the message body or by reference by providing a URI for accessing the data. In either case, the data and the format used to markup the speech needs to be of a content type supported by the server.</p>
@@ -3038,7 +3040,7 @@ start-input-timers  =  "Start-Input-Timers" ":" BOOLEAN CRLF
 <p id="rfc.section.9.4.15.p.1">This header field specifies the length of silence required following user speech before the speech recognizer finalizes a result (either accepting it or generating a no-match result). The Speech-Complete-Timeout value applies when the recognizer currently has a complete match against an active grammar, and specifies how long the recognizer MUST wait for more input before declaring a match. By contrast, the Speech-Incomplete-Timeout is used when the speech is an incomplete match to an active grammar. The value is in milliseconds.</p>
 <pre>
 speech-complete-timeout = "Speech-Complete-Timeout" ":"
-			  1*19DIGIT CRLF
+                          1*19DIGIT CRLF
             </pre>
 <p id="rfc.section.9.4.15.p.2">A long Speech-Complete-Timeout value delays the result to the client and therefore makes the application's response to a user slow. A short Speech-Complete-Timeout may lead to an utterance being broken up inappropriately. Reasonable speech complete timeout values are typically in the range of 0.3 seconds to 1.0 seconds. The value for this header field ranges from 0 to an implementation-specific maximum value. The default value for this header field is implementation specific. This header field MAY occur in RECOGNIZE, SET-PARAMS, or GET-PARAMS.</p>
 <h3 id="rfc.section.9.4.16"><a href="#rfc.section.9.4.16">9.4.16.</a> Speech-Incomplete-Timeout</h3>
@@ -3054,7 +3056,7 @@ speech-incomplete-timeout = "Speech-Incomplete-Timeout" ":" 1*19DIGIT
 <p id="rfc.section.9.4.17.p.1">This header field specifies the inter-digit timeout value to use when recognizing DTMF input. The value is in milliseconds. The value for this header field ranges from 0 to an implementation-specific maximum value. The default value is 5 seconds. This header field MAY occur in RECOGNIZE, SET-PARAMS, or GET-PARAMS.</p>
 <pre>
 dtmf-interdigit-timeout = "DTMF-Interdigit-Timeout" ":"
-			   1*19DIGIT CRLF
+                           1*19DIGIT CRLF
             </pre>
 <h3 id="rfc.section.9.4.18"><a href="#rfc.section.9.4.18">9.4.18.</a> DTMF-Term-Timeout</h3>
 <p id="rfc.section.9.4.18.p.1">This header field specifies the terminating timeout to use when recognizing DTMF input. The DTMF-Term-Timeout applies only when no additional input is allowed by the grammar; otherwise, the DTMF&#8209;Interdigit&#8209;Timeout applies. The value is in milliseconds. The value for this header field ranges from 0 to an implementation-specific maximum value. The default value is 10 seconds. This header field MAY occur in RECOGNIZE, SET-PARAMS, or GET-PARAMS.</p>
@@ -4069,7 +4071,7 @@ C-&gt;S:   MRCP/2.0 ... END-PHRASE-ENROLLMENT 543262
 S-&gt;C:   MRCP/2.0 ... 543262 200 COMPLETE
         Channel-Identifier:32AECB23433801@speechrecog
         Waveform-URI:&lt;http://mediaserver.com/recordings/file1324.wav&gt;
-		     ;size=242453;duration=25432
+                     ;size=242453;duration=25432
 </pre>
 <h2 id="rfc.section.9.18"><a href="#rfc.section.9.18">9.18.</a> MODIFY-PHRASE</h2>
 <p id="rfc.section.9.18.p.1">The MODIFY-PHRASE method sent from the client to the server is used to change the phrase ID, NL phrase, and/or weight for a given phrase in a personal grammar.</p>
@@ -6437,7 +6439,7 @@ event-name       =    synthesizer-event
                  /    verifier-event
       
 message-header   =  1*(generic-header / resource-header /
-		       generic-field)
+                       generic-field)
 
 generic-field    =    field-name ":" [ field-value ]
 field-name       =    token
@@ -6661,10 +6663,10 @@ speech-marker         =    "Speech-Marker" ":"
                            [";" 1*(UTFCHAR / %x20)] CRLF
 
 speech-language       =    "Speech-Language" ":"
-			   1*VCHAR CRLF 
+                           1*VCHAR CRLF 
 
 fetch-hint            =    "Fetch-Hint" ":"
-			   ("prefetch" / "safe") CRLF 
+                           ("prefetch" / "safe") CRLF 
 
 audio-fetch-hint      =    "Audio-Fetch-Hint" ":" 
                           ("prefetch" / "safe" / "stream") CRLF 
@@ -7010,7 +7012,7 @@ identification-tag =    token
                 &lt;xs:complexType mixed="true"&gt;
                   &lt;xs:sequence minOccurs="0"&gt;
                     &lt;xs:any namespace="##other"
-		            processContents="lax"/&gt;
+                            processContents="lax"/&gt;
                   &lt;/xs:sequence&gt;
                 &lt;/xs:complexType&gt;
               &lt;/xs:element&gt;
@@ -7510,6 +7512,12 @@ identification-tag =    token
     </tr>
     <tr>
       <td class="reference">
+        <b id="refs.javaSpeechGrammarFormat">[refs.javaSpeechGrammarFormat]</b>
+      </td>
+      <td class="top"><a>Sun Microsystems</a>, "<a>Java Speech Grammar Format Version 1.0</a>", October 1998.</td>
+    </tr>
+    <tr>
+      <td class="reference">
         <b id="RFC2046">[RFC2046]</b>
       </td>
       <td class="top"><a href="mailto:ned@innosoft.com" title="Innosoft International, Inc.">Freed, N.</a> and <a href="mailto:nsb@nsb.fv.com" title="First Virtual Holdings">N. Borenstein</a>, "<a href="http://tools.ietf.org/html/rfc2046">Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types</a>", RFC 2046, November 1996.</td>
@@ -7597,12 +7605,6 @@ identification-tag =    token
         <b id="W3C.REC-voicexml20-20040316">[W3C.REC-voicexml20-20040316]</b>
       </td>
       <td class="top"><a>Rehor, K.</a>, <a>Ferrans, J.</a>, <a>Tryphonas, S.</a>, <a>Burnett, D.</a>, <a>Carter, J.</a>, <a>McGlashan, S.</a>, <a>Porter, B.</a>, <a>Hunt, A.</a>, <a>Danielsen, P.</a> and <a>B. Lucas</a>, "<a href="http://www.w3.org/TR/2004/REC-voicexml20-20040316">Voice Extensible Markup Language (VoiceXML) Version 2.0</a>", World Wide Web Consortium Recommendation REC-voicexml20-20040316, March 2004.</td>
-    </tr>
-    <tr>
-      <td class="reference">
-        <b id="refs.javaSpeechGrammarFormat">[refs.javaSpeechGrammarFormat]</b>
-      </td>
-      <td class="top"><a>Sun Microsystems</a>, "<a>Java Speech Grammar Format Version 1.0</a>", October 1998.</td>
     </tr>
   </tbody>
 </table>

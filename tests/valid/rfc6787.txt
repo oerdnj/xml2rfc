@@ -406,6 +406,7 @@ RFC 6787                         MRCPv2                    November 2012
      17.2.  Informative References . . . . . . . . . . . . . . . . . 226
    Appendix A.  Contributors . . . . . . . . . . . . . . . . . . . . 228
    Appendix B.  Acknowledgements . . . . . . . . . . . . . . . . . . 228
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . 229
 
 1.  Introduction
 
@@ -442,8 +443,7 @@ RFC 6787                         MRCPv2                    November 2012
    Section 3.2 of [RFC4313].  This is the reason why MRCPv2 does not run
    over RTSP.
 
-   MRCPv2 leverages these capabilities by building upon SIP and the
-   Session Description Protocol (SDP) [RFC4566].  MRCPv2 uses SIP to set
+
 
 
 
@@ -452,6 +452,8 @@ Burnett & Shanmugham         Standards Track                    [Page 8]
 RFC 6787                         MRCPv2                    November 2012
 
 
+   MRCPv2 leverages these capabilities by building upon SIP and the
+   Session Description Protocol (SDP) [RFC4566].  MRCPv2 uses SIP to set
    up and tear down media and control sessions with the server.  In
    addition, the client can use a SIP re-INVITE method (an INVITE dialog
    sent within an existing SIP session) to change the characteristics of
@@ -497,9 +499,7 @@ RFC 6787                         MRCPv2                    November 2012
    All the mechanisms specified in this document are described in both
    prose and an augmented Backus-Naur form (ABNF [RFC5234]).
 
-   The complete message format in ABNF form is provided in Section 15
-   and is the normative format definition.  Note that productions may be
-   duplicated within the main body of the document for reading
+
 
 
 
@@ -508,6 +508,9 @@ Burnett & Shanmugham         Standards Track                    [Page 9]
 RFC 6787                         MRCPv2                    November 2012
 
 
+   The complete message format in ABNF form is provided in Section 15
+   and is the normative format definition.  Note that productions may be
+   duplicated within the main body of the document for reading
    convenience.  If a production in the body of the text conflicts with
    one in the normative definition, the latter rules.
 
@@ -553,9 +556,6 @@ RFC 6787                         MRCPv2                    November 2012
    essentially have not affected the resource yet and are in the queue
    to be processed, they are not reflected in the state-machine
    diagrams.
-
-
-
 
 
 
@@ -1367,7 +1367,7 @@ RFC 6787                         MRCPv2                    November 2012
    start-line      =   request-line / response-line / event-line
 
    message-header  =   1*(generic-header / resource-header /
-                  generic-field)
+                          generic-field)
 
    resource-header =   synthesizer-header
                    /   recognizer-header
@@ -3085,7 +3085,7 @@ RFC 6787                         MRCPv2                    November 2012
 
 
    fetch-hint          =   "Fetch-Hint" ":"
-                ("prefetch" / "safe") CRLF
+                            ("prefetch" / "safe") CRLF
 
 8.4.11.  Audio-Fetch-Hint
 
@@ -4888,7 +4888,7 @@ RFC 6787                         MRCPv2                    November 2012
    incomplete match to an active grammar.  The value is in milliseconds.
 
    speech-complete-timeout = "Speech-Complete-Timeout" ":"
-                 1*19DIGIT CRLF
+                             1*19DIGIT CRLF
 
    A long Speech-Complete-Timeout value delays the result to the client
    and therefore makes the application's response to a user slow.  A
@@ -4949,7 +4949,7 @@ RFC 6787                         MRCPv2                    November 2012
    in RECOGNIZE, SET-PARAMS, or GET-PARAMS.
 
    dtmf-interdigit-timeout = "DTMF-Interdigit-Timeout" ":"
-                  1*19DIGIT CRLF
+                              1*19DIGIT CRLF
 
 9.4.18.  DTMF-Term-Timeout
 
@@ -7145,7 +7145,7 @@ RFC 6787                         MRCPv2                    November 2012
    S->C:   MRCP/2.0 ... 543262 200 COMPLETE
            Channel-Identifier:32AECB23433801@speechrecog
            Waveform-URI:<http://mediaserver.com/recordings/file1324.wav>
-                ;size=242453;duration=25432
+                        ;size=242453;duration=25432
 
 9.18.  MODIFY-PHRASE
 
@@ -11463,7 +11463,7 @@ RFC 6787                         MRCPv2                    November 2012
                     /    verifier-event
 
    message-header   =  1*(generic-header / resource-header /
-                  generic-field)
+                          generic-field)
 
    generic-field    =    field-name ":" [ field-value ]
    field-name       =    token
@@ -11726,10 +11726,10 @@ RFC 6787                         MRCPv2                    November 2012
                               [";" 1*(UTFCHAR / %x20)] CRLF
 
    speech-language       =    "Speech-Language" ":"
-                  1*VCHAR CRLF
+                              1*VCHAR CRLF
 
    fetch-hint            =    "Fetch-Hint" ":"
-                  ("prefetch" / "safe") CRLF
+                              ("prefetch" / "safe") CRLF
 
    audio-fetch-hint      =    "Audio-Fetch-Hint" ":"
                              ("prefetch" / "safe" / "stream") CRLF
@@ -12133,7 +12133,7 @@ RFC 6787                         MRCPv2                    November 2012
                    <xs:complexType mixed="true">
                      <xs:sequence minOccurs="0">
                        <xs:any namespace="##other"
-                       processContents="lax"/>
+                               processContents="lax"/>
                      </xs:sequence>
                    </xs:complexType>
                  </xs:element>
@@ -12465,8 +12465,8 @@ RFC 6787                         MRCPv2                    November 2012
               - character sets - Part 1: Latin alphabet No. 1, JTC1/
               SC2", ISO Standard 8859-1, 1987.
 
-   [RFC0793]  Postel, J., "Transmission Control Protocol", STD 7, RFC
-              793, September 1981.
+   [RFC0793]  Postel, J., "Transmission Control Protocol", STD 7,
+              RFC 793, September 1981.
 
    [RFC1035]  Mockapetris, P., "Domain names - implementation and
               specification", STD 13, RFC 1035, November 1987.
@@ -12523,8 +12523,8 @@ RFC 6787                         MRCPv2                    November 2012
               RFC 3711, March 2004.
 
    [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
-              Resource Identifier (URI): Generic Syntax", STD 66, RFC
-              3986, January 2005.
+              Resource Identifier (URI): Generic Syntax", STD 66,
+              RFC 3986, January 2005.
 
    [RFC4145]  Yon, D. and G. Camarillo, "TCP-Based Media Transport in
               the Session Description Protocol (SDP)", RFC 4145,
@@ -12628,6 +12628,10 @@ RFC 6787                         MRCPv2                    November 2012
    [Q.23]     International Telecommunications Union, "Technical
               Features of Push-Button Telephone Sets", ITU-T Q.23, 1993.
 
+   [refs.javaSpeechGrammarFormat]
+              Sun Microsystems, "Java Speech Grammar Format Version
+              1.0", October 1998.
+
    [RFC2046]  Freed, N. and N. Borenstein, "Multipurpose Internet Mail
               Extensions (MIME) Part Two: Media Types", RFC 2046,
               November 1996.
@@ -12646,10 +12650,6 @@ RFC 6787                         MRCPv2                    November 2012
    [RFC4301]  Kent, S. and K. Seo, "Security Architecture for the
               Internet Protocol", RFC 4301, December 2005.
 
-   [RFC4313]  Oran, D., "Requirements for Distributed Control of
-              Automatic Speech Recognition (ASR), Speaker
-              Identification/Speaker Verification (SI/SV), and Text-to-
-              Speech (TTS) Resources", RFC 4313, December 2005.
 
 
 
@@ -12660,9 +12660,14 @@ Burnett & Shanmugham         Standards Track                  [Page 226]
 RFC 6787                         MRCPv2                    November 2012
 
 
+   [RFC4313]  Oran, D., "Requirements for Distributed Control of
+              Automatic Speech Recognition (ASR), Speaker
+              Identification/Speaker Verification (SI/SV), and Text-to-
+              Speech (TTS) Resources", RFC 4313, December 2005.
+
    [RFC4395]  Hansen, T., Hardie, T., and L. Masinter, "Guidelines and
-              Registration Procedures for New URI Schemes", BCP 35, RFC
-              4395, February 2006.
+              Registration Procedures for New URI Schemes", BCP 35,
+              RFC 4395, February 2006.
 
    [RFC4463]  Shanmugham, S., Monaco, P., and B. Eberman, "A Media
               Resource Control Protocol (MRCP) Developed by Cisco,
@@ -12675,8 +12680,8 @@ RFC 6787                         MRCPv2                    November 2012
               Digits, Telephony Tones, and Telephony Signals", RFC 4733,
               December 2006.
 
-   [RFC4960]  Stewart, R., "Stream Control Transmission Protocol", RFC
-              4960, September 2007.
+   [RFC4960]  Stewart, R., "Stream Control Transmission Protocol",
+              RFC 4960, September 2007.
 
    [RFC6454]  Barth, A., "The Web Origin Concept", RFC 6454, December
               2011.
@@ -12703,11 +12708,6 @@ RFC 6787                         MRCPv2                    November 2012
               Language (VoiceXML) Version 2.0", World Wide Web
               Consortium Recommendation REC-voicexml20-20040316, March
               2004, <http://www.w3.org/TR/2004/REC-voicexml20-20040316>.
-
-   [refs.javaSpeechGrammarFormat]
-              Sun Microsystems, "Java Speech Grammar Format Version
-              1.0", October 1998.
-
 
 
 

@@ -1,0 +1,3 @@
+[console_scripts]
+xml2rfc = xml2rfc.run:main
+

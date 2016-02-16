@@ -14,6 +14,7 @@ except ImportError:
 from xml2rfc.writers.base import BaseRfcWriter
 from xml2rfc.writers.raw_txt import RawTextRfcWriter
 import xml2rfc.utils
+import xml2rfc.log
 
 class PaginatedTextRfcWriter(RawTextRfcWriter):
     """ Writes to a text file, paginated with headers and footers
@@ -21,7 +22,8 @@ class PaginatedTextRfcWriter(RawTextRfcWriter):
         The page width is controlled by the *width* parameter.
     """
 
-    def __init__(self, xmlrfc, width=72, quiet=False, verbose=False, date=datetime.date.today()):
+    def __init__(self, xmlrfc, width=72, quiet=False, verbose=False, date=datetime.date.today(),
+                    omit_headers=False):
         RawTextRfcWriter.__init__(self, xmlrfc, width=width, quiet=quiet, \
                                   verbose=verbose, date=date)
         self.left_header = ''
@@ -33,6 +35,7 @@ class PaginatedTextRfcWriter(RawTextRfcWriter):
         self.heading_marks = {}
         self.paged_toc_marker = 0
         self.page_line = 0
+        self.omit_headers = omit_headers
 
     def _make_footer_and_header(self, page, final=False):
         tmp = []
@@ -87,10 +90,14 @@ class PaginatedTextRfcWriter(RawTextRfcWriter):
 
     def needLines(self, count):
         """Deal with the PI directive needLines"""
-        if int(count) < 0:
-            self._set_break_hint(1, 'break', len(self.buf))
-        else:
-            self._set_break_hint(count, 'raw', len(self.buf))
+        try:
+            if int(count) < 0:
+                self._set_break_hint(1, 'break', len(self.buf))
+            else:
+                self._set_break_hint(count, 'raw', len(self.buf))
+        except ValueError as e:
+            if not self.indexmode:
+                xml2rfc.log.warn('%s, in processing instruction needlines="%s"' % (str(e).capitalize(), count))
 
     # Here we override some methods to mark line numbers for large sections.
     # We'll store each marking as a dictionary of line_num: section_length.
@@ -195,13 +202,17 @@ class PaginatedTextRfcWriter(RawTextRfcWriter):
                 if p == '\f':
                     break;
             return
-        self.output.append('')
-        self.output.append('')
-        self.output.append('')
-        self.output.extend(self._make_footer_and_header(self.page_num, final))
+        if self.omit_headers:
+            self.output.append('\f')
+        else:
+            self.output.append('')
+            self.output.append('')
+            self.output.append('')
+            self.output.extend(self._make_footer_and_header(self.page_num, final))
         if not final:
             self.output.append('')
             self.output.append('')
+
         self.page_length = 1
         self.page_num += 1
 

@@ -6,8 +6,10 @@ import codecs
 import datetime
 import textwrap
 import lxml
+import re
 import xml2rfc.log
 import xml2rfc.utils
+
 try:
     import debug
     assert debug
@@ -302,11 +304,12 @@ class BaseRfcWriter:
         self.ascii = False
         self.nbws_cond = u'\u00A0'
         self.eref_list = []
+        self.xmlrfc = xmlrfc
+        self.pis = self.xmlrfc.getpis()
 
         # We will refer to the XmlRfc document root as 'r'
         self.xmlrfc = xmlrfc
         self.r = xmlrfc.getroot()
-        self.pis = xmlrfc.getpis()
 
         # Document counters
         self.ref_start = 1              # Start of reference counters
@@ -367,16 +370,20 @@ class BaseRfcWriter:
         return item
 
     def _indexSection(self, counter, title=None, anchor=None, toc=True, \
-                      level=1, appendix=False):
+                      level=1, appendix=False, numbered=True):
         counter = str(counter)
-        if appendix:
-            autoName = 'Appendix' + self.nbws_cond + counter
-            autoAnchor = 'rfc.appendix.' + counter
+        if numbered:
+            if appendix:
+                autoName = 'Appendix' + self.nbws_cond + counter
+                autoAnchor = 'rfc.appendix.' + counter
+            else:
+                autoName = 'Section' + self.nbws_cond + counter
+                autoAnchor = 'rfc.section.' + counter
+            item = _RfcItem(autoName, autoAnchor, counter=counter, title=title,
+                           anchor=anchor, toc=toc, level=level, appendix=appendix)
         else:
-            autoName = 'Section' + self.nbws_cond + counter
-            autoAnchor = 'rfc.section.' + counter
-        item = _RfcItem(autoName, autoAnchor, counter=counter, title=title, \
-                       anchor=anchor, toc=toc, level=level, appendix=appendix)
+            autoAnchor = 'rfc.' + re.sub('[^A-Za-z0-9]+', '_', title).lower()
+            item = _RfcItem(title, autoAnchor, title=title)
         self._index.append(item)
         return item
 
@@ -433,7 +440,6 @@ class BaseRfcWriter:
     def get_initials(self, author):
         """author is an rfc2629 author element.  Return the author initials,
         fixed up according to current flavour and policy."""
-        import re
         initials = author.attrib.get('initials', '')
         initials_list = re.split("[. ]+", initials)
         if self.pis["multiple-initials"] == "no":
@@ -442,6 +448,9 @@ class BaseRfcWriter:
         else:
             initials = ". ".join(initials_list) + "."
         return initials
+
+    def parse_pi(self, pi):
+        return xml2rfc.utils.parse_pi(pi, self.pis)
 
     def _getTocIndex(self):
         return [item for item in self._index if item.toc]
@@ -479,7 +488,7 @@ class BaseRfcWriter:
                     if date.attrib['day'][0] == '0':
                         date.attrib['day'] = today.strftime('%d').replace('0', '')
             elif year != str(today.year) and not month:
-                xml2rfc.log.warn("Incomplete and out-of date <date/> element: %s" % lxml.etree.tostring(date))
+                xml2rfc.log.error("Incomplete and out-of date <date/> element: %s" % lxml.etree.tostring(date))
         try:
             datetime.datetime.strptime(date.attrib.get('year')+date.attrib.get('month'), '%Y%B')
         except ValueError:
@@ -487,6 +496,8 @@ class BaseRfcWriter:
                 datetime.datetime.strptime(date.attrib.get('year')+date.attrib.get('month'), '%Y%b')
             except ValueError:
                 xml2rfc.log.warn("Year and/or month are incorrect values in <date/> element: %s" % lxml.etree.tostring(date))
+        except TypeError:
+            pass
 
         # Setup the expiration string for drafts as published date + six months
         if self.draft:
@@ -675,6 +686,10 @@ class BaseRfcWriter:
                     lines.append(org_name)
                 last_org = org_name
                 last_pos = len(lines)-1
+            # remove blank lines between authors and date
+            if lines[last_pos] == '':
+                del lines[last_pos]
+                last_pos = len(lines)-1
 
         date = self.r.find('front/date')
         if date is not None:
@@ -792,8 +807,8 @@ class BaseRfcWriter:
         pass
         
 
-    def write_section_rec(self, section, count_str="1.", appendix=False, \
-                           level=0):
+    def write_section_rec(self, section, count_str="1.", appendix=False,
+                           level=0, numbered=True):
         """ Recursively writes <section> elements 
         
             We use the self.indexmode flag to determine whether or not we
@@ -805,29 +820,41 @@ class BaseRfcWriter:
             title = section.attrib.get('title')
             include_toc = section.attrib.get('toc', self.defaults['section_toc']) != 'exclude' \
                           and (not appendix or self.pis['tocappendix'] == 'yes')
+            if level == 1:
+                numbered = numbered and section.attrib.get('numbered') != "no"
+            else:
+                numbered = section.attrib.get('numbered') != "no"
+            if level > 1 and not numbered:
+                if not self.indexmode:
+                    xml2rfc.log.warn('Unnumbered subsections are not permitted: found section "%s" with attribute numbered="no"' % (title, ))
+                numbered = True
             if self.indexmode:
                 # Add section to the index
                 self._indexSection(count_str, title=title, anchor=anchor,
                                    toc=include_toc, level=level,
-                                   appendix=appendix)
+                                   appendix=appendix, numbered=numbered)
             else:
                 # Write the section heading
-                aa_prefix = appendix and 'rfc.appendix.' or 'rfc.section.'
+                if numbered:
+                    autoAnchor = 'rfc.' + ('section.' if not appendix else 'appendix.') + count_str
+                else:
+                    autoAnchor = 'rfc.' + re.sub('[^A-Za-z0-9]+', '_', title).lower()
                 bullet = appendix and level == 1 and 'Appendix %s' % count_str or count_str
-                self.write_heading(title, bullet=bullet + '.',
-                                   autoAnchor=aa_prefix + count_str,
+                self.write_heading(title, bullet=bullet + '.' if numbered else "",
+                                   autoAnchor=autoAnchor,
                                    anchor=anchor, level=level)
         else:
             # Must be <middle> or <back> element -- no title or index.
             count_str = ''
+            numbered = True
 
         p_count = 1  # Paragraph counter
         for element in section:
             # Check for a PI
             if element.tag is lxml.etree.PI:
-                pis = self.xmlrfc.parse_pi(element)
-                if pis and "needLines" in pis:
-                    self.needLines(pis["needLines"])
+                pidict = self.parse_pi(element)
+                if pidict and "needLines" in pidict:
+                    self.needLines(pidict["needLines"])
             # Write elements in XML document order
             if element.tag == 't':
                 anchor = element.attrib.get('anchor')
@@ -851,17 +878,25 @@ class BaseRfcWriter:
 
         # Recurse on sections
         for child_sec in section.findall('section'):
+            if level == 0:
+                if numbered:
+                    numbered = child_sec.attrib.get('numbered') != "no"
+                elif child_sec.attrib.get('numbered') != "no":
+                    title = child_sec.attrib.get('title')
+                    if not self.indexmode:
+                        xml2rfc.log.warn('Numbered sections are not permitted after unnumbered sections: found section "%s" without attribute numbered="no"' % (title,))
+                    numbered = False
             if appendix == True and not count_str:
                 if s_count == 1 and self.pis["rfcedstyle"] == "yes":
                    self.needLines(-1)
                 # Use an alphabetic counter for first-level appendix
                 uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 self.write_section_rec(child_sec, uppercase[s_count - 1],
-                                        level=level + 1, appendix=True)
+                                        level=level + 1, appendix=True, numbered=numbered)
             else:
                 # Use a numeric counter
                 self.write_section_rec(child_sec, count_str + str(s_count), 
-                                        level=level + 1, appendix=appendix)
+                                        level=level + 1, appendix=appendix, numbered=numbered)
 
             s_count += 1
 
@@ -985,6 +1020,14 @@ class BaseRfcWriter:
         self.figure_count = 0
         self.table_count = 0
         self.eref_count = 0
+        self.pis = self.xmlrfc.getpis()
+
+        # Abstract
+        abstract = self.r.find('front/abstract')
+        if abstract is not None:
+            self.write_heading('Abstract', autoAnchor='rfc.abstract')
+            for t in abstract.findall('t'):
+                self.write_t_rec(t)
 
         # Middle sections
         middle = self.r.find('middle')
@@ -1021,8 +1064,6 @@ class BaseRfcWriter:
                     title = ref.find("front/title").text
                     self._indexRef(ref_counter, title=title, anchor=ref.attrib["anchor"])
 
-            
-
         # Appendix sections
         back = self.r.find('back')
         if back is not None:
@@ -1037,16 +1078,15 @@ class BaseRfcWriter:
             self._index.append(item)
 
         # Authors addresses section
-        if self.pis["rfcedstyle"] != "yes":
-            authors = self.r.findall('front/author')
-            autoAnchor = 'rfc.authors'
-            if len(authors) > 1:
-                title = "Authors' Addresses"
-            else:
-                title = "Author's Address"
-            # Add explicitly to index
-            item = _RfcItem(title, autoAnchor, title=title)
-            self._index.append(item)
+        authors = self.r.findall('front/author')
+        autoAnchor = 'rfc.authors'
+        if len(authors) > 1:
+            title = "Authors' Addresses"
+        else:
+            title = "Author's Address"
+        # Add explicitly to index
+        item = _RfcItem(title, autoAnchor, title=title)
+        self._index.append(item)
 
     def _build_document(self):
         self.indexmode = False
@@ -1056,6 +1096,7 @@ class BaseRfcWriter:
         self.figure_count = 0
         self.table_count = 0
         self.eref_count = 0
+        self.pis = self.xmlrfc.getpis()
 
         # Block header
         topblock = self.pis['topblock']

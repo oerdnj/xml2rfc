@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: xml2rfc
-Version: 2.4.8
+Version: 2.5.1
 Summary: Xml2rfc generates RFCs and IETF drafts from document source in XML according to the dtd in RFC2629.
 Home-page: https://tools.ietf.org/tools/xml2rfc/trac/
 Author: Henrik Levkowetz
@@ -48,7 +48,7 @@ Description: Introduction
         .. _lxml:				http://lxml.de/
         .. _pip:				https://pypi.python.org/pypi/pip
         .. _xml2rfc distribution package:	https://pypi.python.org/pypi/pip
-        
+        .. _requests:				http://docs.python-requests.org/
         
         
         User Install
@@ -101,17 +101,19 @@ Description: Introduction
             ===============  ======================= ==================================================
             Short            Long                    Description
             ===============  ======================= ==================================================
+            ``-C``           ``--clear-cache``       purge the cache and exit
             ``-h``           ``--help``              show the help message and exit
-            ``-v``           ``--verbose``           print extra information
-            ``-q``           ``--quiet``             dont print anything
             ``-n``           ``--no-dtd``            disable DTD validation step
-            ``-c CACHE``     ``--cache=CACHE``       specify an alternate cache directory to write to
-            ``-d DTD``       ``--dtd=DTD``           specify an alternate dtd file
+            ``-N``           ``--no-network``        don't use the network to resolve references
+            ``-q``           ``--quiet``             dont print anything
+            ``-v``           ``--verbose``           print extra information
+            ``-V``           ``--version``           display the version number and exit
+        
             ``-b BASENAME``  ``--basename=BASENAME`` specify the base name for output files
-            ``-f FILENAME``  ``--filename=FILENAME`` specify an output filename
-            (none)           ``--date=DATE``         run as if todays date is DATE (format: yyyy-mm-dd)
-            (none)           ``--clear-cache``       purge the cache and exit
-            (none)           ``--version``           display the version number and exit
+            ``-c CACHE``     ``--cache=CACHE``       specify an alternate cache directory to write to
+            ``-D DATE``      ``--date=DATE``         run as if todays date is DATE (format: yyyy-mm-dd)
+            ``-d DTD``       ``--dtd=DTD``           specify an alternate dtd file
+            ``-o FILENAME``  ``--out=FILENAME``      specify an output filename
             ===============  ======================= ==================================================
         
         **Formats**
@@ -141,12 +143,200 @@ Description: Introduction
         xml2rfc depends on the following packages:
         
         * lxml_ *(> 2.2.7)*
-        
-        
+        * requests_ *(> 2.5.0)*
         
         
         Changelog
         =========
+        
+        
+        Version 2.5.1 (19 Oct 2015)
+        ------------------------------------------------
+        
+        
+          This is a bugfix maintenance release.
+        
+          * Handled a situation where xml2rfc could crash if no source file name
+            was available.
+        
+          From tonyh@att.com:
+          * Modified some tests to match Jim's recent changes
+        
+          From ietf@augustcellars.com:
+        
+          * Add the valid versions of the text files for the unicode test file.
+        
+          * Fixes URIs which didn't add up.  This includes correcting code to deal
+            with the difference in unicode strings on Python 2.7 vs Python 3.4.  Build
+            the abstract when doing the indexing pass so that any references in it
+            will be included both times through Add the start of a unicode test file.
+            Fixes issue #290
+        
+          * Fixed an xref generation failure: Check to see if there is text, and do
+            the right thing if there isn't.  The HTML version seems to be producing
+            adequate results.  It does an <a> element around an empty piece of text.
+            That is what was asked for.  Fixes issue #226.
+        
+          * Fixed an exception on out-of-date dates.  1.  We make it an error instead
+            of a warning to have an incomplete and not this year date.  2.  We catch
+            the type exception and continue.  Fixes issue #285
+        
+          * Replaced the space between the series info and the series value with a
+            non-breaking space.  Changed any slashes in the series value so that there
+            is a non-breaking zero width space following it.  If a URL is placed in
+            the series value, then it is still not going to do correct breaking on
+            this.  However this is not something that people should do.  Fixes issue
+            #296
+        
+        
+        
+        
+        
+        
+        
+        Version 2.5.0 (18 May 2015)
+        ------------------------------------------------
+        
+        
+          This release uses different installation settings than previous releases,
+          which should make installation under MS Window easier.  It also contains
+          a few bugfixes.  For details, see below:
+        
+          * Applied patches from julian.reschke@gmx.de: Render <eref target='uri'> 
+            without text as inline <uri>.  Fixes issue #234.
+        
+          * Changed setup.py to use the entry_points option instead of the scripts 
+            option, in order to work better on mswin systems.  Fixes issue #291.
+        
+          * Made the reference sorting when using symrefs=yes and sortrefs=yes 
+            case-insensitive by mapping the reference keys to lowercase.  This is 
+            correct for ASCII keys but not necessarily for non-ASCII keys, depending on 
+            locale.  Fixes issue #295 (for now).
+        
+          * Changed the path through reference resolution so that too old cached
+            references will be updated in the same block where it was discovered that
+            they were too old, rather than (erroneously) relying on this happening on
+            a later attempt.
+        
+          * Set things up so that the processing instrunction dictionary isn't shared
+            between the index-building and the document-building runs, which they were
+            earlier, with the result that pi values could be different at the start of
+            the document-building than they should have been.  Fixes issue #292.
+        
+        
+        
+        
+        
+        
+        
+        Version 2.4.12 (19 Apr 2015)
+        ------------------------------------------------
+        
+        
+          * Modified the nroff table output for PI subcompact=yes so as to produce 
+            a list, rather than a paragraph of run-together list entries.  Fixes issue 
+            #287.
+        
+          * Fixed a bug where a local variable would not always be set.
+        
+          * Fixed the bug in 2.4.10 where xml2rfc wouldn't fetch references.
+        
+          * Changed the cachetest so it exposes the bug found in 2.4.10 where 
+            reference resulution would fail without even attempting network access.
+        
+        
+        
+        
+        
+        
+        Version 2.4.11 (10 Apr 2015)
+        ------------------------------------------------
+        
+        
+          * Corrected when the deprecation message about using -f and --file is emitted.
+        
+          * Changed where warnings about missing cache entry and --no-network is
+            emitted, in order to not emit warnings too early.
+        
+        
+        
+        
+        
+        
+        Version 2.4.10 (08 Mar 2015)
+        ------------------------------------------------
+        
+        
+          * Catch bad arguments to the 'needlines' processing instruction.  Fixes 
+            issue #282.
+        
+          * Make sure we don't ask textwrap to wrap text with within a width of 
+            zero.  Fixes issue #277.
+        
+          * Reorganized the presentation of options, and corrected some of the help 
+            strings.  Marked the -f, --filename options in use for output filename as 
+            deprecated.
+        
+          * Added a switch --no-network to turn off all attempts to use the network 
+            to resolve references.  When using this, processing will fail if the 
+            references required by the source file aren't available in the file cache.  
+            Also added code to refresh cached content if it's older than 14 days.  
+            Modified some tests to suit.  This closes issues #275 and #284.
+        
+          * Fixed a bug where leading whitespace in title attributes weren't 
+            handled properly.  Fixes issue #274.
+        
+          * Tweaked tox.ini to work around an issue with the py27 and py33 
+            environments after upgrading to 2.7.8 and 3.3.5, respectively.
+        
+          * Added the attribute quote-title (default: true) to schema and writers, 
+            and updated the tests accordingly.  Fixes issue #283.
+        
+        
+        
+        
+        
+        
+        
+        Version 2.4.9 (28 Feb 2015)
+        ------------------------------------------------
+        
+        
+          * Applied a patch from Martin Thompson to render the ToC with sublevel 
+            indentation, instead of as a flat list, for html output, and updated the 
+            html regression test masters to match.
+        
+          * Added a --no-headers switch, valid only for paginated text.  
+            Specifying this omits the output of headers and footers, but retains form 
+            feed and top-of-page line padding.
+        
+          * Consistently use utf-8 as output encoding.  As long as all content is 
+            forced to be ascii, this doesn't change anything; if we permit non-ascii 
+            content, this ensures it's utf-8 encoded.
+        
+          * Issue a warning for input containing tab characters, and expand to 8, 
+            not 4 characters.  Fixes issue #276.
+        
+          * Added 'i.e.' as a non-sentence-ending string.  Added a test for some 
+            abbreviations, including 'i.e.'.  Fixes issue #115
+        
+          * Changed the handling of rfcedstyle so as to include the Authors' 
+            Addresses section in the TOC.  Fixes issue #273.
+        
+          * Added the ability to create unnumbered sections by using the attribute 
+            numbered="no" on the section element, with the constraints specified in 
+            draft-hoffman-xml2rfc-15.  Fixes issue #105.
+        
+          * In the front page top right-hand matter, don't keep the blank line 
+            between authors and date that would otherwise be used for authors without 
+            affiliation.  Fixes issue #272.
+        
+          * Rewrote the network access code to use the requests package instead of 
+            urllib.  Added cache cleaning to the tox test actions.
+        
+        
+        
+        
         
         
         Version 2.4.8 (05 Jun 2014)

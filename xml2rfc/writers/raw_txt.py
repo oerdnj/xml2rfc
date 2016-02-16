@@ -35,6 +35,7 @@ class RawTextRfcWriter(BaseRfcWriter):
         self.iref_marker = 0    # Line number in buffer to write index to
         self.list_counters = {} # Maintain counters for 'format' type lists
         self.edit_counter = 0   # Counter for edit marks
+        # Set this to False to permit utf+8 output:
         self.ascii = True       # Enable ascii flag
         self.cref_counter = 0   # Counter for cref anchors
         self.cref_list = []
@@ -187,7 +188,7 @@ class RawTextRfcWriter(BaseRfcWriter):
         for element in list:
             # Check for PI
             if element.tag is lxml.etree.PI:
-                self.xmlrfc.parse_pi(element)
+                self.parse_pi(element)
             elif element.tag == 't':
                 # Disable linebreak if subcompact=yes AND not first list element
                 leading_blankline = True
@@ -288,7 +289,7 @@ class RawTextRfcWriter(BaseRfcWriter):
                 indent = 3
                 sub_indent = indent + len(bullet)
                 pagestr = '%4s' % item.page
-                lines = textwrap.wrap(bullet + (item.title if item.title else ""),
+                lines = textwrap.wrap(bullet + (item.title.strip() if item.title else ""),
                                       self.width - len(pagestr),
                                       initial_indent=' ' * indent,
                                       subsequent_indent=' ' * sub_indent)
@@ -372,11 +373,13 @@ class RawTextRfcWriter(BaseRfcWriter):
         if not item:
             target_text = '[' + target + ']'
         elif format == 'none':
-            return xref.text.rstrip()
+            if xref.text:
+                return xref.text.rstrip()
+            return ''
         elif format == 'counter':
             target_text = item.counter
         elif format == 'title':
-            target_text = item.title
+            target_text = item.title.strip()
         else: #Default
             target_text = item.autoName
         target_text = re.sub("-", u"\u2011", target_text) # switch to non-breaking hyphens
@@ -424,7 +427,7 @@ class RawTextRfcWriter(BaseRfcWriter):
         for i, element in enumerate(elements):
             # Check for a PI first
             if element.tag is lxml.etree.PI:
-                self.xmlrfc.parse_pi(element)
+                self.parse_pi(element)
             if element.tag not in self.inline_tags:
                 # Not an inline element, exit
                 return ''.join(line), elements[i:]
@@ -434,11 +437,13 @@ class RawTextRfcWriter(BaseRfcWriter):
             elif element.tag == 'eref':
                 if element.text:
                     line.append(element.text + ' ')
-                self.eref_count += 1
-                if element.text != element.attrib['target']:
-                    line.append('[' + str(self.eref_count) + ']')
-                    if self.indexmode:
-                        self.eref_list.append([self.eref_count, element])
+                    self.eref_count += 1
+                    if element.text != element.attrib['target']:
+                        line.append('[' + str(self.eref_count) + ']')
+                        if self.indexmode:
+                            self.eref_list.append([self.eref_count, element])
+                else:
+                    line.append('<' + element.attrib['target'] + '>')
             elif element.tag == 'iref':
                 self._add_iref_to_index(element)
             elif element.tag == 'cref' and \
@@ -522,7 +527,10 @@ class RawTextRfcWriter(BaseRfcWriter):
             self.buf.extend([''] * blanklines)
             start_line = len(self.buf)
             # Format the input
-            lines = [line.rstrip() for line in text.expandtabs(4).split('\n')]
+            if "\t" in text:
+                xml2rfc.log.warn("Text %scontains tab characters.  These will be expanded, assuming a tab-size of 8." %
+                    (("around line %s "%source_line) if source_line else ""))
+            lines = [line.rstrip() for line in text.expandtabs().split('\n')]
             # Outdent if it helps anything
             longest_line = max(len(line.rstrip()) for line in lines)
             if (longest_line > self.width-indent):
@@ -734,16 +742,19 @@ class RawTextRfcWriter(BaseRfcWriter):
                 refstring.append(', ')
             title = ref.find('front/title')
             if title is not None and title.text:
-                refstring.append('"' + title.text.strip() + '", ')
+                if ref.attrib.get("quote-title", "true") == "true": # attribute default value: yes
+                    refstring.append('"' + title.text.strip() + '"')
+                else:
+                    refstring.append(title.text.strip())
             else:
                 xml2rfc.log.warn('No title specified in reference',
                                  ref.attrib.get('anchor', ''))
             for seriesInfo in ref.findall('seriesInfo'):
                 if seriesInfo.attrib['name'] == "Internet-Draft":
-                    refstring.append(seriesInfo.attrib['value'] + ' (work in progress), ')
+                    refstring.append(', '+seriesInfo.attrib['value'] + ' (work in progress)')
                 else:
-                    refstring.append(seriesInfo.attrib['name'] + ' ' +
-                                     seriesInfo.attrib['value'] + ', ')
+                    refstring.append(', '+seriesInfo.attrib['name'] + u'\u00A0' +
+                                     seriesInfo.attrib['value'].replace('/', '/' + u'\u200B'))
             date = ref.find('front/date')
             if date is not None:
                 month = date.attrib.get('month', '')
@@ -751,13 +762,11 @@ class RawTextRfcWriter(BaseRfcWriter):
                 if month or year:
                     if month:
                         month += ' '
-                    refstring.append(month + year)
+                    refstring.append(', '+month + year)
             # Target?
             target = ref.attrib.get('target')
             if target:
-                if not refstring[-1].endswith(', '):
-                    refstring.append(', ')
-                refstring.append('<' + target + '>')
+                refstring.append(', <' + target + '>')
             refstring.append('.')
             annotation = ref.find('annotation')
             # Use anchor or num depending on PI
@@ -781,7 +790,7 @@ class RawTextRfcWriter(BaseRfcWriter):
         # numeric order, and if we sort, they will be sorted alphabetically,
         # rather than numerically ... ( i.e., [10], [11], ... [19], [1], ... )
         if self.pis['sortrefs'] == 'yes' and self.pis['symrefs'] == 'yes' :
-            refkeys.sort()
+            refkeys.sort(key=str.lower)
         # Hard coded indentation amount
         refindent = 11
         for key in refkeys:
@@ -1142,6 +1151,8 @@ class RawTextRfcWriter(BaseRfcWriter):
                    plus.append(a-b)
                target, ttcol_widths = self.expand_cols(longest_words, target, plus)
 
+        # Ensure we don't have any zero-width columns; it breaks textwrap
+        ttcol_widths = [ k or 1 for k in ttcol_widths ] 
         # Now construct the cells using textwrap against ttcol_widths
         cell_lines = [
             [ textwrap.wrap(cell, ttcol_widths[j]) or [''] for j, cell in enumerate(matrix[i]) ]
@@ -1421,5 +1432,5 @@ class RawTextRfcWriter(BaseRfcWriter):
         else:
             file.write("\n"*5)
         for line in self.post_process_lines(self.output):
-            file.write(line.rstrip(" \t"))
+            file.write(line.rstrip(u" \t"))
             file.write("\n")

@@ -6,10 +6,7 @@
 
 import re
 import textwrap
-try:
-    from urllib.request import FancyURLopener
-except ImportError:
-    from urllib import FancyURLopener
+
 try:
     import debug
     assert debug
@@ -17,16 +14,6 @@ except ImportError:
     pass
 
 import xml2rfc.log
-
-
-class StrictUrlOpener(FancyURLopener):
-    """ Override urllib opener to throw exceptions on 404s """
-    def __init__(self, *args, **kwargs):
-        FancyURLopener.__init__(self, *args, **kwargs)
-      
-    def http_error_default(self, url, fp, errcode, errmsg, headers):
-        raise IOError('Document not found ' + url)
-
 
 class MyTextWrapper(textwrap.TextWrapper):
     """ Subclass that overrides a few things in the standard implementation """
@@ -61,7 +48,7 @@ class MyTextWrapper(textwrap.TextWrapper):
             # Tla with leading uppercase, and special cases
             # (Note: v1 spelled out Fig, Tbl, Mrs, Drs, Rep, Sen, Gov, Rev, Gen, Col, Maj and Cap,
             #  but those are redundant with the Tla regex.)
-            r'|([A-Z][a-z][a-z]|Eq|[Cc]f|vs|resp|viz|ibid|[JS]r|M[rs]|Messrs|Mmes|Dr|Profs?|St|Lt)\.'
+            r'|([A-Z][a-z][a-z]|Eq|[Cc]f|vs|resp|viz|ibid|[JS]r|M[rs]|Messrs|Mmes|Dr|Profs?|St|Lt|i\.e)\.'
             r')\Z' # trailing dot, end of group and end of chunk
             )
 
@@ -320,7 +307,7 @@ def _replace_unicode_characters(str):
         if match.group(1) in _unicode_replacements:
             str = re.sub(match.group(1), _unicode_replacements[match.group(1)], str)
         else:
-            entity = match.group(1).encode('ascii', 'xmlcharrefreplace')
+            entity = match.group(1).encode('ascii', 'xmlcharrefreplace').decode('ascii')
             str = re.sub(match.group(1), entity, str)
             xml2rfc.log.warn('Illegal character replaced in string: ' + entity)
 
@@ -492,3 +479,21 @@ _unicode_replacements = {
     u'\u017e': 'z',
     u'\u2010': '-',
 }
+
+def parse_pi(pi, pis):
+    """ Add a processing instruction to the current state 
+
+        Will also return the dictionary containing the added instructions
+        for use in things like ?include instructions
+    """
+    if pi.text:
+        # Split text in the format 'key="val"'
+        chunks = re.split(r'=[\'"]([^\'"]*)[\'"]', pi.text)
+        # Create pairs from this flat list, discard last element if odd
+        tmp_dict = dict(zip(chunks[::2], chunks[1::2]))
+        for key, val in tmp_dict.items():
+            # Update main PI state
+            pis[key] = val
+        # Return the new values added
+        return tmp_dict
+    return {}

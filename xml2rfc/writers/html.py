@@ -169,17 +169,25 @@ class HtmlRfcWriter(BaseRfcWriter):
             xml2rfc.log.warn('Invalid tocdepth specified, must be integer:', \
                              tocdepth)
             tocdepth = 3
+        curdepth = 1
         for item in self._getTocIndex():
             if item.level <= tocdepth:
+                # set UL level
+                if item.level > curdepth:
+                    self.buffers['toc_rows'].append('<ul>')
+                for i in range(item.level, curdepth):
+                    self.buffers['toc_rows'].append('</ul>')
+                curdepth = item.level
+
                 # Create link for head
                 link = E.LINK(href='#' + item.autoAnchor)
                 link.attrib['rel'] = 'copyright' in item.autoAnchor and \
                                      'Copyright' or 'Chapter'
                 if item.title and item.counter:
-                    link.attrib['title'] = item.counter + ' ' + item.title
+                    link.attrib['title'] = item.counter + ' ' + item.title.strip()
                 self.buffers['toc_head_links'].append(self._serialize(link))
                 # Create actual toc list item
-                a = E.A(item.title, href='#' + item.autoAnchor)
+                a = E.A(item.title.strip(), href='#' + item.autoAnchor)
                 counter_text = item.counter and item.counter + '.   ' or ''
                 # Prepend appendix at first level
                 if item.level == 1 and item.appendix:
@@ -187,6 +195,9 @@ class HtmlRfcWriter(BaseRfcWriter):
                 li = E.LI(counter_text)
                 li.append(a)
                 self.buffers['toc_rows'].append(self._serialize(li))
+        for i in range(1, curdepth):
+            self.buffers['toc_rows'].append('</ul>')
+
     def _serialize(self, element):
         if sys.version > '3':
             return lxml.html.tostring(element, pretty_print=True, method='xml', encoding='ascii').decode()
@@ -229,7 +240,7 @@ class HtmlRfcWriter(BaseRfcWriter):
                 elif format == 'counter':
                     text = item.counter
                 elif format == 'title':
-                    text = item.title
+                    text = item.title.strip()
                 else:
                     # Default
                     text = item.autoName
@@ -239,13 +250,16 @@ class HtmlRfcWriter(BaseRfcWriter):
                 return [a]
         elif element.tag == 'eref':
             target = element.attrib.get('target', '')
-            text = element.text or target
-            if text:
-                a = E.A(text, href=target)
+            if element.text:
+                a = E.A(element.text, href=target)
                 a.tail = element.tail
-#                cite = E.CITE('[' + target + ']', title='NONE')
-#                current.append(cite)
                 return [a]
+            else:
+                sp1 = E.SPAN('<')
+                a = E.A(target, href=target)
+                sp2 = E.SPAN('>')
+                sp2.tail = element.tail
+                return [sp1, a, sp2]
         elif element.tag == 'cref':
             self.cref_counter += 1
             anchor = element.attrib.get('anchor', None)
@@ -335,7 +349,7 @@ class HtmlRfcWriter(BaseRfcWriter):
             h.append(a_bullet)
             if anchor:
                 # Use an anchor link for heading
-                a_text = E.A(text, href='#' + anchor, )
+                a_text = E.A(text.strip(), href='#' + anchor, )
                 a_text.attrib["id"] = anchor
                 h.append(a_text)
             else:
@@ -553,8 +567,6 @@ class HtmlRfcWriter(BaseRfcWriter):
                     ref_td.append(a)
                     last = a
                 a.tail = ', '
-            if len(authors):
-                last.tail = ', "'
             title = reference.find('front/title')
             if title is not None and title.text:
                 title_string = title.text.strip()
@@ -562,9 +574,16 @@ class HtmlRfcWriter(BaseRfcWriter):
                 xml2rfc.log.warn('No title specified in reference', \
                                  reference.attrib.get('anchor', ''))
                 title_string = ''
-            title_a = E.A(title_string)
-            title_a.tail = '", '
-            ref_td.append(title_a)
+            if title_string:
+                if reference.attrib.get("quote-title", "true") == "true": # attribute default value: yes
+                    last.tail = ', "' if len(authors) else '"'
+                    title_a = E.A(title_string)
+                    title_a.tail = '"'
+                else:
+                    last.tail = ', ' if len(authors) else ''
+                    title_a = E.A(title_string)
+                    title_a.tail = ''
+                ref_td.append(title_a)
             for seriesInfo in reference.findall('seriesInfo'):
                 # Create title's link to document from seriesInfo
                 if seriesInfo.attrib.get('name', '') == 'RFC':
@@ -575,8 +594,8 @@ class HtmlRfcWriter(BaseRfcWriter):
                     title_a.attrib['href'] = \
                         self.html_defaults['references_url'] + \
                         seriesInfo.attrib.get('value', '')
-                title_a.tail += seriesInfo.attrib.get('name', '') + ' ' + \
-                             seriesInfo.attrib.get('value', '') + ', '
+                title_a.tail += ', '+seriesInfo.attrib.get('name', '') + ' ' + \
+                             seriesInfo.attrib.get('value', '')
             if not title_a.attrib.has_key("href"):
                 href = reference.attrib.get("target", None)
                 if href:
@@ -584,10 +603,12 @@ class HtmlRfcWriter(BaseRfcWriter):
             date = reference.find('front/date')
             if date is not None:
                 month = date.attrib.get('month', '')
-                if month:
-                    month += ' '
                 year = date.attrib.get('year', '')
-                title_a.tail += month + year + '.'
+                if month or year:
+                    title_a.tail += ', '
+                    if month:
+                        month += ' '
+                    title_a.tail += month + year + '.'
             tr.append(bullet_td)
             tr.append(ref_td)
             refdict[bullet] = tr
@@ -597,7 +618,7 @@ class HtmlRfcWriter(BaseRfcWriter):
             if annotation is not None and annotation.text:
                 ref_td.append(E.P(annotation.text))
         if self.pis['sortrefs'] == 'yes' and self.pis['symrefs'] == 'yes':
-            refkeys = sorted(refkeys)
+            refkeys.sort(key=str.lower)
         for key in refkeys:
             tbody.append(refdict[key])
         self.ref_start += i + 1                
