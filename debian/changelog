@@ -1,3 +1,10 @@
+xml2rfc (2.5.1-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.5.1
+  * Get rid of Makefile in dh_auto_configure target
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 16 Feb 2016 10:33:38 +0100
+
 xml2rfc (2.4.8-1) unstable; urgency=medium
 
   * new upstream release.
