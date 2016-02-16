@@ -7,8 +7,12 @@ debian/xml2rfc.1:
 override_dh_installman: debian/xml2rfc.1
 	dh_installman
 
+override_dh_auto_configure:
+	if [ -f Makefile ]; then mv Makefile Makefile.orig; fi
+
 # silly workaround for emacs turds left in upstream tarball
 override_dh_clean:
+	if [ -f Makefile.orig ]; then mv Makefile.org Makefile; fi
 	dh_clean --exclude=nroff~
 
 override_dh_auto_test:
